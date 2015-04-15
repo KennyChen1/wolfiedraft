@@ -71,9 +71,14 @@ public class WDK_GUI {
     // WORKSPACES
     /*VBox fantasyTeamPane;
     Label paneTitle;*/
-        VBox topWorkspacePane;
+    VBox topWorkspacePane;
     Label courseHeadingLabel;
     SplitPane topWorkspaceSplitPane;
+    
+    
+    VBox availPlayersWorkspacePane;
+    Label availPlayersHeadingLabel;
+    SplitPane availPlayersSplitPane;
     
     public WDK_GUI(Stage initPrimaryStage) {
         primaryStage = initPrimaryStage;
@@ -189,20 +194,29 @@ public class WDK_GUI {
         return label;
     }
     
-    private void initTopWorkspace() {
+    private void initFantasyTeamsWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
-                topWorkspaceSplitPane = new SplitPane();
-        topWorkspacePane = new VBox();
-
+        topWorkspaceSplitPane = new SplitPane();
         topWorkspacePane = new VBox();
         
         courseHeadingLabel = initChildLabel(topWorkspacePane, WDK_PropertyType.FANTASY_TEAM_HEADING_LABEL, CLASS_HEADING_LABEL);
         wdkPane.setCenter(topWorkspacePane);
     }
     
+    private void initAvailablePlayersWorkspace() {
+        // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
+        availPlayersSplitPane = new SplitPane();
+        availPlayersWorkspacePane = new VBox();        
+        availPlayersHeadingLabel = initChildLabel(availPlayersWorkspacePane, WDK_PropertyType.FANTASY_STANDING_HEADING_LABEL, CLASS_HEADING_LABEL);
+        wdkPane.setCenter(availPlayersWorkspacePane);
+    }
+    
     private void initEventHandlers() throws IOException {
         newDraftButton.setOnAction(e -> {
-            initTopWorkspace();
+            initFantasyTeamsWorkspace();
+        });
+        button3.setOnAction(e -> {
+            initAvailablePlayersWorkspace();
         });
     }
 }

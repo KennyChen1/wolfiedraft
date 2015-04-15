@@ -55,7 +55,8 @@
 	
         <!-- GUI LABELS -->
         <property name="FANTASY_TEAM_HEADING_LABEL"			value="Fantasy Teams"></property>
-		
+		<property name="FANTASY_STANDING_HEADING_LABEL"		value="Fantasy Standings"></property>
+
 		
         <!-- ERROR MESSAGES -->
         <property name="START_DATE_AFTER_END_DATE_ERROR_MESSAGE"    value="The Starting Monday cannot be chronologically after the Ending Friday"></property>

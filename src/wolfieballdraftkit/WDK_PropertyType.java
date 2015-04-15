@@ -59,6 +59,7 @@ public enum WDK_PropertyType {
         
         // FOR DRAFT EDIT WORKSPACE
         FANTASY_TEAM_HEADING_LABEL,
+        FANTASY_STANDING_HEADING_LABEL,
        
         // PAGE CHECKBOX LABELS
         INDEX_CHECKBOX_LABEL,
