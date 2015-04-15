@@ -1,7 +1,7 @@
 package wolfieballdraftkit;
 
 /**
- * This class stores all the constants used by the Course Site Builder application 
+ * This class stores all the constants used by the Draft Site Builder application 
  * at startup, which means before the user interface is even loaded. This mostly 
  * means how to find files for initializing the application, like properties.xml.
  * 
@@ -14,7 +14,7 @@ public class WDK_StartupConstants
     public static final String PROPERTIES_FILE_NAME = "properties.xml";
     public static final String PROPERTIES_SCHEMA_FILE_NAME = "properties_schema.xsd";    
     public static final String PATH_DATA = "./data/";
-    public static final String PATH_COURSES = PATH_DATA + "courses/";
+    public static final String PATH_DRAFTS = PATH_DATA + "drafts/";
     public static final String PATH_IMAGES = "./images/";
     public static final String PATH_CSS = "wdk/css";
     public static final String PATH_SITES = "sites/";

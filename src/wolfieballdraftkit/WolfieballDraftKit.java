@@ -37,8 +37,17 @@ public class WolfieballDraftKit extends Application {
         if (success) {
             PropertiesManager props = PropertiesManager.getPropertiesManager();
             String appTitle = props.getProperty(PROP_APP_TITLE);
-            gui = new WDK_GUI(primaryStage);
-            gui.initGUI(appTitle);          
+            
+            try {
+                // INITIALIZE THE USER INTERFACE COMPONENTS
+                gui = new WDK_GUI(primaryStage);
+                gui.initGUI(appTitle); 
+                
+            }
+            catch(IOException ioe) {
+                //eH = ErrorHandler.getErrorHandler();
+                //eH.handlePropertiesFileError();
+            }
         }
 
     }
