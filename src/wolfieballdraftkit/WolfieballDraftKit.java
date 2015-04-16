@@ -44,7 +44,7 @@ public class WolfieballDraftKit extends Application {
                 gui.initGUI(appTitle); 
                 
             }
-            catch(IOException ioe) {
+            catch(Exception ioe) {
                 //eH = ErrorHandler.getErrorHandler();
                 //eH.handlePropertiesFileError();
             }
