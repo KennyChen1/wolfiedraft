@@ -31,8 +31,8 @@
         <property name="EXIT_TOOLTIP"               value="Exit the Application"></property>
         <property name="ADD_ITEM_TOOLTIP"           value="Add Schedule Item"></property>
         <property name="REMOVE_ITEM_TOOLTIP"        value="Remove Schedule Item"></property>
-        <property name="ADD_TOOLTIP"       			value="Add Lecture"></property>
-        <property name="REMOVE_TOOLTIP"    			 value="Remove Lecture"></property>
+        <property name="ADD_LECTURE_TOOLTIP"        value="Add Lecture"></property>
+        <property name="REMOVE_LECTURE_TOOLTIP"     value="Remove Lecture"></property>
         <property name="MOVE_UP_LECTURE_TOOLTIP"    value="Move Up Lecture"></property>
         <property name="MOVE_DOWN_LECTURE_TOOLTIP"  value="Move Down Lecture"></property>
         <property name="ADD_HW_TOOLTIP"             value="Add Assignment"></property>
@@ -56,10 +56,7 @@
         <!-- GUI LABELS -->
         <property name="FANTASY_TEAM_HEADING_LABEL"			value="Fantasy Teams"></property>
 		<property name="FANTASY_STANDING_HEADING_LABEL"		value="Fantasy Standings"></property>
-		<property name="DRAFT_SUMMARY_HEADING_LABEL"		value="Draft Summary"></property>
-		<property name="MLB_TEAM_HEADING_LABEL"				value="MLB Teams"></property>
-		<property name="AVAILABLE_PLAYERS_HEADING_LABEL"	value="Available Player"></property>
-		<property name="SEARCH_HEADING_LABEL"				value="Search": "></property>
+
 		
         <!-- ERROR MESSAGES -->
         <property name="START_DATE_AFTER_END_DATE_ERROR_MESSAGE"    value="The Starting Monday cannot be chronologically after the Ending Friday"></property>
