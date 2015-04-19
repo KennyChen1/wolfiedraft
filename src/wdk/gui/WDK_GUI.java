@@ -13,13 +13,18 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
@@ -61,24 +66,41 @@ public class WDK_GUI {
     Button exitButton;
 
     // THIS IS THE BOTTOM TOOLBAR
-        FlowPane bottomToolbarPane;
-        Button homeButton    ;
-        Button fantasyTeamsButton;
-        Button fantasyStandingButton;
-        Button draftButton;
-        Button MLBTeamButton;
+    FlowPane bottomToolbarPane;
+    Button homeButton    ;
+    Button fantasyTeamsButton;
+    Button fantasyStandingButton;
+    Button draftButton;
+    Button MLBTeamButton;
 
     // WORKSPACES
-    /*VBox fantasyTeamPane;
-    Label paneTitle;*/
+    SplitPane topWorkspaceSplitPane;
     VBox topWorkspacePane;
     Label courseHeadingLabel;
-    SplitPane topWorkspaceSplitPane;
     
-    
+    SplitPane availPlayersSplitPane;
     VBox availPlayersWorkspacePane;
     Label availPlayersHeadingLabel;
-    SplitPane availPlayersSplitPane;
+    Label searchLabel;
+    Button addButton;
+    Button removeButton;
+    TextField searchBar;
+    RadioButton button1;    RadioButton button2;    RadioButton button3;
+    RadioButton button4;    RadioButton button5;    RadioButton button6;
+    RadioButton button7;    RadioButton button8;    RadioButton button9;
+    RadioButton button10;    RadioButton button11;
+    
+    SplitPane fantasyStandingSplitPane;
+    VBox fantasyStandingWorkspacePane;        
+    Label fantasyStandingHeadingLabel;
+    
+    SplitPane draftSummarySplitPane;
+    VBox draftSummaryWorkspacePane;        
+    Label draftSummaryHeadingLabel;
+    
+    SplitPane mlbTeamsSplitPane;
+    VBox mlbTeamsWorkspacePane;        
+    Label mlbTeamsHeadingLabel;
     
     public WDK_GUI(Stage initPrimaryStage) {
         primaryStage = initPrimaryStage;
@@ -105,9 +127,10 @@ public class WDK_GUI {
 
         // AND FINALLY START UP THE WINDOW (WITHOUT THE WORKSPACE)
           initFileToolbar();initBottomToolbar();
-               
         initWindow(windowTitle);
         initEventHandlers();
+                      initAvailablePlayersWorkspace();
+
     }
     
      private void initWindow(String windowTitle) {
@@ -165,7 +188,6 @@ public class WDK_GUI {
 
     }
      
-
       // INIT A BUTTON AND ADD IT TO A CONTAINER IN A TOOLBAR
     private Button initChildButton(Pane toolbar, WDK_PropertyType icon, WDK_PropertyType tooltip, boolean disabled) {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -187,11 +209,28 @@ public class WDK_GUI {
         label.getStyleClass().add(styleClass);
         return label;
     }
-    
     private Label initChildLabel(Pane container, WDK_PropertyType labelProperty, String styleClass) {
         Label label = initLabel(labelProperty, styleClass);
         container.getChildren().add(label);
         return label;
+    }
+    private TextField initGridTextField(Pane container, int size, String initText, boolean editable) {
+        TextField tf = new TextField();
+        tf.setPrefColumnCount(size);
+        tf.setText(initText);
+        tf.setEditable(editable);
+        container.getChildren().add(tf);
+        return tf;
+    }
+    private RadioButton initRadioButton(Pane container, WDK_PropertyType labelProperty, ToggleGroup group){
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        String labelText = props.getProperty(labelProperty);
+        
+        RadioButton bt = new RadioButton(labelText);
+        container.getChildren().add(bt);
+        bt.setToggleGroup(group);
+        
+        return bt;
     }
     
     private void initFantasyTeamsWorkspace() {
@@ -205,18 +244,79 @@ public class WDK_GUI {
     
     private void initAvailablePlayersWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
-        availPlayersSplitPane = new SplitPane();
-        availPlayersWorkspacePane = new VBox();        
-        availPlayersHeadingLabel = initChildLabel(availPlayersWorkspacePane, WDK_PropertyType.FANTASY_STANDING_HEADING_LABEL, CLASS_HEADING_LABEL);
-        wdkPane.setCenter(availPlayersWorkspacePane);
+        availPlayersWorkspacePane = new VBox();
+        
+        availPlayersHeadingLabel = initChildLabel(availPlayersWorkspacePane, WDK_PropertyType.AVAILABLE_PLAYERS_HEADING_LABEL, CLASS_HEADING_LABEL);
+        
+        HBox bar = new HBox();
+        addButton = initChildButton(bar, WDK_PropertyType.ADD_ICON, WDK_PropertyType.ADD_LECTURE_TOOLTIP, true);
+        removeButton = initChildButton(bar, WDK_PropertyType.MINUS_ICON, WDK_PropertyType.REMOVE_LECTURE_TOOLTIP, true);
+        availPlayersHeadingLabel = initChildLabel(bar, WDK_PropertyType.SEARCH_HEADING_LABEL, CLASS_HEADING_LABEL);
+        searchBar = initGridTextField(bar, 20, "", true);
+        
+        HBox bar1 = new HBox();
+        final ToggleGroup group = new ToggleGroup();
+        button1 = initRadioButton(bar1, WDK_PropertyType.ALL_LABEL, group);
+        button2 = initRadioButton(bar1, WDK_PropertyType.FIRST_BASEMAN_LABEL, group);
+        button3 = initRadioButton(bar1, WDK_PropertyType.SECOND_BASEMAN_LABEL, group);
+        button4 = initRadioButton(bar1, WDK_PropertyType.THIRD_BASEMAN_LABEL, group);
+        button5 = initRadioButton(bar1, WDK_PropertyType.CATCHER_LABEL, group);
+        button6 = initRadioButton(bar1, WDK_PropertyType.CORNER_INFIELDER_LABEL, group);
+        button7 = initRadioButton(bar1, WDK_PropertyType.MID_INFIELD_LABEL, group);
+        button8 = initRadioButton(bar1, WDK_PropertyType.SHORTSTOP_LABEL, group);
+        button9 = initRadioButton(bar1, WDK_PropertyType.OUTFIELDER_LABEL, group);
+        button10= initRadioButton(bar1, WDK_PropertyType.UTILITY_LABEL, group);
+        button11= initRadioButton(bar1, WDK_PropertyType.PITCHER_LABEL, group);
+
+        
+               
+        
+        availPlayersWorkspacePane.getChildren().add(bar);
+        availPlayersWorkspacePane.getChildren().add(bar1);
+        /*bar.getChildren().add(addButton);
+        bar.getChildren().add(removeButton);*/
+        
+        //wdkPane.setCenter(availPlayersWorkspacePane);
+        
+        
+    }
+    private void initFantasyStandingWorkspace() {
+        // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
+        fantasyStandingSplitPane = new SplitPane();
+        fantasyStandingWorkspacePane = new VBox();        
+        fantasyStandingHeadingLabel = initChildLabel(fantasyStandingWorkspacePane, WDK_PropertyType.FANTASY_STANDING_HEADING_LABEL, CLASS_HEADING_LABEL);
+        wdkPane.setCenter(fantasyStandingWorkspacePane);
+    }
+    private void initDraftWorkspace() {
+        // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
+        draftSummarySplitPane = new SplitPane();
+        draftSummaryWorkspacePane = new VBox();        
+        draftSummaryHeadingLabel = initChildLabel(draftSummaryWorkspacePane, WDK_PropertyType.DRAFT_SUMMARY_HEADING_LABEL, CLASS_HEADING_LABEL);
+        wdkPane.setCenter(draftSummaryWorkspacePane);
+    }
+    private void initMLBTeamsWorkspace() {
+        // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
+        mlbTeamsSplitPane = new SplitPane();
+        mlbTeamsWorkspacePane = new VBox();        
+        mlbTeamsHeadingLabel = initChildLabel(mlbTeamsWorkspacePane, WDK_PropertyType.MLB_TEAMS_HEADING_LABEL, CLASS_HEADING_LABEL);
+        wdkPane.setCenter(mlbTeamsWorkspacePane);
     }
     
     private void initEventHandlers() throws IOException {
-        newDraftButton.setOnAction(e -> {
-            initFantasyTeamsWorkspace();
+        homeButton.setOnAction(e -> {
+         wdkPane.setCenter(availPlayersWorkspacePane);
         });
         fantasyStandingButton.setOnAction(e -> {
-            initAvailablePlayersWorkspace();
+            initFantasyStandingWorkspace();
+        });
+        fantasyTeamsButton.setOnAction(e -> {
+            initFantasyTeamsWorkspace();
+        });        
+        draftButton.setOnAction(e -> {
+            initDraftWorkspace();
+        });
+        MLBTeamButton.setOnAction(e -> {
+            initMLBTeamsWorkspace();
         });
     }
 }

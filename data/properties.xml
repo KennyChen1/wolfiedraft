@@ -31,8 +31,8 @@
         <property name="EXIT_TOOLTIP"               value="Exit the Application"></property>
         <property name="ADD_ITEM_TOOLTIP"           value="Add Schedule Item"></property>
         <property name="REMOVE_ITEM_TOOLTIP"        value="Remove Schedule Item"></property>
-        <property name="ADD_LECTURE_TOOLTIP"        value="Add Lecture"></property>
-        <property name="REMOVE_LECTURE_TOOLTIP"     value="Remove Lecture"></property>
+        <property name="ADD_TOOLTIP"     		   	value="Add Player"></property>
+        <property name="REMOVE_TOOLTIP"   			value="Remove Player"></property>
         <property name="MOVE_UP_LECTURE_TOOLTIP"    value="Move Up Lecture"></property>
         <property name="MOVE_DOWN_LECTURE_TOOLTIP"  value="Move Down Lecture"></property>
         <property name="ADD_HW_TOOLTIP"             value="Add Assignment"></property>
@@ -56,7 +56,24 @@
         <!-- GUI LABELS -->
         <property name="FANTASY_TEAM_HEADING_LABEL"			value="Fantasy Teams"></property>
 		<property name="FANTASY_STANDING_HEADING_LABEL"		value="Fantasy Standings"></property>
-
+		<property name="AVAILABLE_PLAYERS_HEADING_LABEL"	value="Available Players"></property>
+		<property name="DRAFT_SUMMARY_HEADING_LABEL"		value="Draft Summary"></property>
+		<property name="MLB_TEAMS_HEADING_LABEL"			value="MLB Teams"></property>
+		<property name="SEARCH_HEADING_LABEL"				value="Search: "></property>
+		
+		<!-- RADIO LABELS -->
+		<property name="ALL_LABEL"						value="All"></property>
+		<property name="FIRST_BASEMAN_LABEL"			value="1B"></property>
+		<property name="SECOND_BASEMAN_LABEL"			value="2B"></property>
+		<property name="THIRD_BASEMAN_LABEL	"			value="3B"></property>
+		<property name="CATCHER_LABEL"					value="C"></property>
+		<property name="CORNER_INFIELDER_LABEL"			value="CI"></property>
+		<property name="MID_INFIELD_LABEL"				value="MI"></property>
+		<property name="SHORTSTOP_LABEL"				value="SS"></property>
+		<property name="OUTFIELDER_LABEL"				value="OF"></property>
+		<property name="UTILITY_LABEL"					value="U"></property>
+		<property name="PITCHER_LABEL"					value="P"></property>
+		
 		
         <!-- ERROR MESSAGES -->
         <property name="START_DATE_AFTER_END_DATE_ERROR_MESSAGE"    value="The Starting Monday cannot be chronologically after the Ending Friday"></property>
