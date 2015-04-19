@@ -16,9 +16,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -78,6 +81,7 @@ public class WDK_GUI {
     VBox topWorkspacePane;
     Label courseHeadingLabel;
     
+    //FOR THE PLAYER HOME WORKSPACE
     SplitPane availPlayersSplitPane;
     VBox availPlayersWorkspacePane;
     Label availPlayersHeadingLabel;
@@ -85,10 +89,31 @@ public class WDK_GUI {
     Button addButton;
     Button removeButton;
     TextField searchBar;
-    RadioButton button1;    RadioButton button2;    RadioButton button3;
-    RadioButton button4;    RadioButton button5;    RadioButton button6;
-    RadioButton button7;    RadioButton button8;    RadioButton button9;
-    RadioButton button10;    RadioButton button11;
+    RadioButton allButton;    RadioButton firstBButton;    RadioButton secBButton;
+    RadioButton thirdBButton;    RadioButton catcherButton;    RadioButton cornInButton;
+    RadioButton midInButton;    RadioButton shortStopButton;    RadioButton outfielderButton;
+    RadioButton utilityButton;    RadioButton pitcherButton;
+    TableView<String> playerTable;//filler datatype
+    
+    //THE TABLE COLUMNS
+    TableColumn firstColumn;    TableColumn lastColumn;         TableColumn proTeamColumn;
+    TableColumn positionColumn; TableColumn birthyearColumn;    TableColumn winsColumn;
+    TableColumn savesColumn;    TableColumn strikeoutsColumn;   TableColumn earnedRunsAvgColumn;
+    TableColumn whipColumn;     TableColumn estimValueColumn;   TableColumn notesColumn;
+    // AND TABLE COLUMNS
+    static final String COL_FIRST = "First";
+    static final String COL_LAST = "Last";
+    static final String COL_PROTEAM = "Pro Team";
+    static final String COL_POS = "Position";
+    static final String COL_BIRTH = "Year of Birth";
+    static final String COL_WINS = "Wins";
+    static final String COL_SAVES = "Saves";
+    static final String COL_STRIKEOUTS = "K";
+    static final String COL_ERA = "ERA";
+    static final String COL_WHIP = "WHIP";// walks + hits / innings pitched 
+    static final String COL_VALUE = "Estimated Value";
+    static final String COL_NOTES = "Notes";
+    
     
     SplitPane fantasyStandingSplitPane;
     VBox fantasyStandingWorkspacePane;        
@@ -126,10 +151,12 @@ public class WDK_GUI {
      public void initGUI(String windowTitle) throws IOException {
 
         // AND FINALLY START UP THE WINDOW (WITHOUT THE WORKSPACE)
-          initFileToolbar();initBottomToolbar();
+        initFileToolbar();
+        initBottomToolbar();
         initWindow(windowTitle);
         initEventHandlers();
-                      initAvailablePlayersWorkspace();
+        initPlayersControl();
+        initAvailablePlayersWorkspace();
 
     }
     
@@ -254,31 +281,23 @@ public class WDK_GUI {
         availPlayersHeadingLabel = initChildLabel(bar, WDK_PropertyType.SEARCH_HEADING_LABEL, CLASS_HEADING_LABEL);
         searchBar = initGridTextField(bar, 20, "", true);
         
-        HBox bar1 = new HBox();
+        HBox radioButtonRow = new HBox();
         final ToggleGroup group = new ToggleGroup();
-        button1 = initRadioButton(bar1, WDK_PropertyType.ALL_LABEL, group);
-        button2 = initRadioButton(bar1, WDK_PropertyType.FIRST_BASEMAN_LABEL, group);
-        button3 = initRadioButton(bar1, WDK_PropertyType.SECOND_BASEMAN_LABEL, group);
-        button4 = initRadioButton(bar1, WDK_PropertyType.THIRD_BASEMAN_LABEL, group);
-        button5 = initRadioButton(bar1, WDK_PropertyType.CATCHER_LABEL, group);
-        button6 = initRadioButton(bar1, WDK_PropertyType.CORNER_INFIELDER_LABEL, group);
-        button7 = initRadioButton(bar1, WDK_PropertyType.MID_INFIELD_LABEL, group);
-        button8 = initRadioButton(bar1, WDK_PropertyType.SHORTSTOP_LABEL, group);
-        button9 = initRadioButton(bar1, WDK_PropertyType.OUTFIELDER_LABEL, group);
-        button10= initRadioButton(bar1, WDK_PropertyType.UTILITY_LABEL, group);
-        button11= initRadioButton(bar1, WDK_PropertyType.PITCHER_LABEL, group);
-
-        
-               
-        
+        allButton = initRadioButton(radioButtonRow, WDK_PropertyType.ALL_LABEL, group);
+        firstBButton = initRadioButton(radioButtonRow, WDK_PropertyType.FIRST_BASEMAN_LABEL, group);
+        secBButton = initRadioButton(radioButtonRow, WDK_PropertyType.SECOND_BASEMAN_LABEL, group);
+        thirdBButton = initRadioButton(radioButtonRow, WDK_PropertyType.THIRD_BASEMAN_LABEL, group);
+        catcherButton = initRadioButton(radioButtonRow, WDK_PropertyType.CATCHER_LABEL, group);
+        cornInButton = initRadioButton(radioButtonRow, WDK_PropertyType.CORNER_INFIELDER_LABEL, group);
+        midInButton = initRadioButton(radioButtonRow, WDK_PropertyType.MID_INFIELD_LABEL, group);
+        shortStopButton = initRadioButton(radioButtonRow, WDK_PropertyType.SHORTSTOP_LABEL, group);
+        outfielderButton = initRadioButton(radioButtonRow, WDK_PropertyType.OUTFIELDER_LABEL, group);
+        utilityButton= initRadioButton(radioButtonRow, WDK_PropertyType.UTILITY_LABEL, group);
+        pitcherButton= initRadioButton(radioButtonRow, WDK_PropertyType.PITCHER_LABEL, group);
+ 
         availPlayersWorkspacePane.getChildren().add(bar);
-        availPlayersWorkspacePane.getChildren().add(bar1);
-        /*bar.getChildren().add(addButton);
-        bar.getChildren().add(removeButton);*/
-        
-        //wdkPane.setCenter(availPlayersWorkspacePane);
-        
-        
+        availPlayersWorkspacePane.getChildren().add(radioButtonRow);
+        availPlayersWorkspacePane.getChildren().add(initPlayersControl());
     }
     private void initFantasyStandingWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
@@ -301,7 +320,46 @@ public class WDK_GUI {
         mlbTeamsHeadingLabel = initChildLabel(mlbTeamsWorkspacePane, WDK_PropertyType.MLB_TEAMS_HEADING_LABEL, CLASS_HEADING_LABEL);
         wdkPane.setCenter(mlbTeamsWorkspacePane);
     }
-    
+    private VBox initPlayersControl()  {
+        VBox playersBox = new VBox();
+        playerTable = new TableView();
+        playersBox.getChildren().add(playerTable);
+        
+        //SET UP THE TABLE COLUMNS
+        
+        firstColumn = new TableColumn(COL_FIRST);    
+        lastColumn = new TableColumn(COL_LAST);
+        proTeamColumn = new TableColumn(COL_PROTEAM);
+        positionColumn = new TableColumn(COL_POS);
+        birthyearColumn = new TableColumn(COL_BIRTH);
+        winsColumn = new TableColumn(COL_WINS);
+        savesColumn = new TableColumn(COL_SAVES);
+        strikeoutsColumn = new TableColumn(COL_STRIKEOUTS);
+        earnedRunsAvgColumn = new TableColumn(COL_ERA);
+        whipColumn = new TableColumn(COL_WHIP);
+        estimValueColumn = new TableColumn(COL_VALUE);
+        notesColumn = new TableColumn(COL_NOTES);
+        
+        //firstColumn.setCellValueFactory(new PropertyValueFactory<String, String>("name"));
+        /*lastColumn = new TableColumn(COL_LAST);
+        proTeamColumn = new TableColumn(COL_PROTEAM);
+        positionColumn = new TableColumn(COL_POS);
+        birthyearColumn = new TableColumn(COL_BIRTH);
+        winsColumn = new TableColumn(COL_WINS);
+        savesColumn = new TableColumn(COL_SAVES);
+        strikeoutsColumn = new TableColumn(COL_STRIKEOUTS);
+        earnedRunsAvgColumn = new TableColumn(COL_ERA);
+        whipColumn = new TableColumn(COL_WHIP);
+        estimValueColumn = new TableColumn(COL_VALUE);
+        notesColumn;*/   
+        
+        
+        playerTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
+                birthyearColumn, winsColumn, savesColumn, strikeoutsColumn, earnedRunsAvgColumn,
+                    whipColumn, estimValueColumn, notesColumn);
+        return playersBox;
+        //availPlayersWorkspacePane.getChildren().add(playerTable);
+    }
     private void initEventHandlers() throws IOException {
         homeButton.setOnAction(e -> {
          wdkPane.setCenter(availPlayersWorkspacePane);
