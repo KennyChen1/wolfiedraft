@@ -18,7 +18,7 @@ public class Pitcher extends Player{
     public Pitcher(String firstName, String lastName, String team, int birthYear,
            String notes, String birthNation, double IP, int earnedRuns, int wins, int saves,
             int hits, int basesOnballs, int strikeOuts) {
-        super(team, lastName, firstName, birthYear, notes, birthNation);
+        super(firstName, lastName, team, birthYear, notes, birthNation);
         
         this.IP = IP;
         this.earnedRuns = earnedRuns;
@@ -37,17 +37,6 @@ public class Pitcher extends Player{
         }
         
     }
-    
-    /*String team, String lastName, String firstName, int birthYear,
-           String notes, String birthNation, String IP, String earnedRuns, String wins,String saves,
-            String hits, String basesOnballs, String strikeOuts) {
-         this.IP = IP;
-        this.earnedRuns = earnedRuns;
-        this.wins = wins;
-        this.saves = saves;
-        this.hits = hits;
-        this.basesOnballs = basesOnballs;
-        this.strikeOuts = strikeOuts;*/
     
     public double getIP(){   
         return IP;

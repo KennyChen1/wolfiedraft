@@ -11,7 +11,7 @@ public class Hitter extends Player{
     int homeRuns;
     int runsBattedIn;
     int stolenBases;
-    double battingAverage;
+    double BA;
     
     
     public Hitter(String firstName, String lastName, String team, int birthYear,
@@ -28,10 +28,10 @@ public class Hitter extends Player{
         
         
         if(AB == 0)
-            this.battingAverage = 0;
+            this.BA = 0;
         else{
             DecimalFormat df = new DecimalFormat("#.000"); 
-            this.battingAverage = Double.parseDouble(df.format(1.0*hits/AB));
+            this.BA = Double.parseDouble(df.format(1.0*hits/AB));
         }
     }
     
@@ -49,11 +49,11 @@ public class Hitter extends Player{
         this.AB = AB;
     }
     
-    public double getbattingAverage(){   
-        return battingAverage;
+    public double getBA(){   
+        return BA;
     }
-    public void set(double battingAverage){
-        this.battingAverage = battingAverage;
+    public void set(double BA){
+        this.BA = BA;
     }
         
     public int getRuns(){   

@@ -21,6 +21,12 @@ public class Player {
     int birthYear;
     String notes;
     String birthNation;
+    String position;
+    int RW;
+    int HRSV;
+    int RBIK;
+    double SBERA;
+    double BAWHIP;
 
     
     public Player(String firstName, String lastName, String team, int birthYear,
@@ -34,6 +40,23 @@ public class Player {
         this.birthNation = birthNation;
     }
 
+    public Player(String firstName, String lastName, String team, String position,
+            int birthYear, String notes, int RW, int HRSV, 
+                int RBIK, double SBERA, double BAWHIP) {
+        
+        this.firstName = firstName;        
+        this.lastName = lastName;
+        this.team = team;
+        this.position = position;
+        this.birthYear = birthYear;
+        this.notes = notes;
+        this.RW = RW;
+        this.HRSV = HRSV;
+        this.RBIK = RBIK;
+        this.SBERA = SBERA;
+        this.BAWHIP = BAWHIP;
+        
+    }
     // BELOW ARE ALL THE ACCESSOR METHODS FOR A COURSE
     // AND THE MUTATOR METHODS. NOTE THAT WE'LL NEED TO CALL
     // THESE AS USERS INPUT VALUES IN THE GUI
@@ -42,9 +65,44 @@ public class Player {
         return firstName;
     }
 
-    public void SetFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+    
+    public int getRW() {
+        return RW;
+    }
+    public void setRunsWins(int RW) {
+        this.RW = RW;
+    }
+    
+    public int getHRSV() {
+        return HRSV;
+    }
+    public void setHRSV(int HRSV) {
+        this.HRSV = HRSV;
+    }
+    
+    public double getBAWHIP() {
+        return BAWHIP;
+    }
+    public void setBAWHIP(double BAWHIP) {
+        this.BAWHIP = BAWHIP;
+    }
+        
+    public double getSBERA() {
+        return SBERA;
+    }
+    public void setSBERA(int SBERA) {
+        this.SBERA = SBERA;
+    }
+    
+    public int getRBIK() {
+        return RBIK;
+    }
+    public void setRBIK(int RBIK) {
+        this.RBIK = RBIK;
+    }        
     
     public String getLastName() {
         return lastName;
@@ -53,7 +111,6 @@ public class Player {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
     
     public String getTeam() {
         return team;
@@ -74,6 +131,13 @@ public class Player {
     public String getNotes() {
         return notes;
     }
+    
+    public String getPosition(){   
+        return position;
+    }
+    public void setPosition(String position){
+        this.position = position;
+    }
 
     public void setNotes(String notes) {
         this.notes = notes;
@@ -83,7 +147,7 @@ public class Player {
         return birthNation;
     }
 
-    public void SetBirthNation(String birthNation) {
+    public void setBirthNation(String birthNation) {
         this.birthNation = birthNation;
     }
 /*
