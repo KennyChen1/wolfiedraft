@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Kenny Chen
  */
 package wdk.gui;
 
@@ -10,7 +8,6 @@ import wolfieballdraftkit.WDK_PropertyType;
 import wdk.controller.FileController;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -89,7 +86,7 @@ public class WDK_GUI {
 
     // WORKSPACES
     SplitPane topWorkspaceSplitPane;
-    VBox topWorkspacePane;
+    VBox fantasyTeamWorkspacePane;
     Label courseHeadingLabel;
     
     //FOR THE PLAYER HOME WORKSPACE
@@ -188,12 +185,9 @@ public class WDK_GUI {
         initAllPlayerTable();
         initHitterTable();
         initPitcherTable();
+        initFantasyTeamsWorkspace();
         initAvailablePlayersWorkspace();
-        initEventHandlers();
-        
-        
-
-    }
+        initEventHandlers();}
     
      private void initWindow(String windowTitle) {
         // SET THE WINDOW TITLE
@@ -298,10 +292,9 @@ public class WDK_GUI {
     private void initFantasyTeamsWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
         topWorkspaceSplitPane = new SplitPane();
-        topWorkspacePane = new VBox();
+        fantasyTeamWorkspacePane = new VBox();
         
-        courseHeadingLabel = initChildLabel(topWorkspacePane, WDK_PropertyType.FANTASY_TEAM_HEADING_LABEL, CLASS_HEADING_LABEL);
-        wdkPane.setCenter(topWorkspacePane);
+        courseHeadingLabel = initChildLabel(fantasyTeamWorkspacePane, WDK_PropertyType.FANTASY_TEAM_HEADING_LABEL, CLASS_HEADING_LABEL);
     }
     
     private void initAvailablePlayersWorkspace() {
@@ -689,12 +682,40 @@ public class WDK_GUI {
             return false;
     }
     
+    private void editNotes(){   
+        
+        if(allButton.isSelected()){
+            Player asgn = allPlayerTable.getSelectionModel().getSelectedItem();
+            NotesDialog a = new NotesDialog(primaryStage, asgn);
+            a.showEditLectureDialog();
+            allPlayerTable.getColumns().get(allPlayerTable.getColumns().size()-1).setVisible(false);
+            allPlayerTable.getColumns().get(allPlayerTable.getColumns().size()-1).setVisible(true);
+        } else if(pitcherButton.isSelected()){             
+            Pitcher asgn = pitcherTable.getSelectionModel().getSelectedItem();
+            NotesDialog a = new NotesDialog(primaryStage, asgn);
+            a.showEditLectureDialog();
+            pitcherTable.getColumns().get(pitcherTable.getColumns().size()-1).setVisible(false);
+            pitcherTable.getColumns().get(pitcherTable.getColumns().size()-1).setVisible(true);
+        } else {
+            Hitter asgn = hitterTable.getSelectionModel().getSelectedItem();
+            NotesDialog a = new NotesDialog(primaryStage, asgn);
+            a.showEditLectureDialog();
+            hitterTable.getColumns().get(hitterTable.getColumns().size()-1).setVisible(false);
+            hitterTable.getColumns().get(hitterTable.getColumns().size()-1).setVisible(true);
+        }
+    }
+    
     private void initEventHandlers() throws IOException {
+        newDraftButton.setOnAction(e -> {
+            NewDraftDialog a = new NewDraftDialog(primaryStage);
+            a.showDialog();
+         wdkPane.setCenter(fantasyTeamWorkspacePane);
+        });
         homeButton.setOnAction(e -> {
          wdkPane.setCenter(availPlayersWorkspacePane);
         });
         fantasyStandingButton.setOnAction(e -> {
-            initFantasyStandingWorkspace();
+            wdkPane.setCenter(fantasyTeamWorkspacePane);
         });
         fantasyTeamsButton.setOnAction(e -> {
             initFantasyTeamsWorkspace();
@@ -707,49 +728,68 @@ public class WDK_GUI {
         });
         
         allButton.setOnAction(e -> {
-            replaceTables(allPlayerTable);            
+            replaceTables(allPlayerTable); 
+            autoSearchTable(searchBar.getText());
         });
         firstBButton.setOnAction(e -> {
             replaceTables(hitterTable);
-            fillTable(new String[] {"1B"});
+            fillTable(new String[] {"1B"});autoSearchTable(searchBar.getText());
         });
         secBButton.setOnAction(e -> {
             replaceTables(hitterTable);
-            fillTable(new String[] {"2B"});
+            fillTable(new String[] {"2B"});autoSearchTable(searchBar.getText());
         });
         thirdBButton.setOnAction(e -> {
             replaceTables(hitterTable);
-            fillTable(new String[] {"3B"});
+            fillTable(new String[] {"3B"});autoSearchTable(searchBar.getText());
         });
         catcherButton.setOnAction(e -> {
             replaceTables(hitterTable);
-            fillTable(new String[] {"C"});
+            fillTable(new String[] {"C"});autoSearchTable(searchBar.getText());
         });
         cornInButton.setOnAction(e -> {
             replaceTables(hitterTable);
-            fillTable(new String[] {"1B", "3B"});
+            fillTable(new String[] {"1B", "3B"});autoSearchTable(searchBar.getText());
         });
         midInButton.setOnAction(e -> {
             replaceTables(hitterTable);
-            fillTable(new String[] {"2B", "SS"});
+            fillTable(new String[] {"2B", "SS"});autoSearchTable(searchBar.getText());
         });
         shortStopButton.setOnAction(e -> {
             replaceTables(hitterTable);
-            fillTable(new String[] {"SS"});
+            fillTable(new String[] {"SS"});autoSearchTable(searchBar.getText());
         });
         outfielderButton.setOnAction(e -> {
             replaceTables(hitterTable);
             fillTable(new String[] {"OF"});
+            autoSearchTable(searchBar.getText());
         });
         utilityButton.setOnAction(e -> {
             replaceTables(hitterTable);
             fillTable(new String[] {"1B", "2B", "3B", "SS", "OF", "C"});
+            autoSearchTable(searchBar.getText());
         });
         pitcherButton.setOnAction(e -> {
             replaceTables(pitcherTable);
+            autoSearchTable(searchBar.getText());
         });
         searchBar.setOnKeyReleased(e -> {
             autoSearchTable(searchBar.getText());
+        });
+        hitterTable.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                editNotes();
+            }
+        });
+        allPlayerTable.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                editNotes();
+            }
+        });
+        pitcherTable.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                editNotes();
+            }
         });
     }
 }
