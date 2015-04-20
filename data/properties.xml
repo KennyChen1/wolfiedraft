@@ -65,7 +65,7 @@
 		<property name="ALL_LABEL"						value="All"></property>
 		<property name="FIRST_BASEMAN_LABEL"			value="1B"></property>
 		<property name="SECOND_BASEMAN_LABEL"			value="2B"></property>
-		<property name="THIRD_BASEMAN_LABEL	"			value="3B"></property>
+		<property name="THIRD_BASEMAN_LABEL"			value="3B"></property>
 		<property name="CATCHER_LABEL"					value="C"></property>
 		<property name="CORNER_INFIELDER_LABEL"			value="CI"></property>
 		<property name="MID_INFIELD_LABEL"				value="MI"></property>
