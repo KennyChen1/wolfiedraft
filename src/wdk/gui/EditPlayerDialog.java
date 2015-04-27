@@ -12,18 +12,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import properties_manager.PropertiesManager;
 import wdk.data.Pitcher;
 import wdk.data.Player;
+import static wolfieballdraftkit.WDK_StartupConstants.*;
 
 /**
  *
  * @author Kenny Chen
  */
-public class NotesDialog extends Stage {
+public class EditPlayerDialog extends Stage {
     // THIS IS THE OBJECT DATA BEHIND THIS UI
     //Lecture lectures;
     
@@ -31,8 +34,16 @@ public class NotesDialog extends Stage {
     GridPane gridPane;
     Scene dialogScene;
     Label headingLabel;
-    Label notesLabel;
-    TextField notesTextField;
+    Label nameLabel;
+    Label positionLabel;
+    Label fantasyTeamLabel;
+    Label positionComboLabel;
+    Label contractComboLabel;
+    ComboBox fantasyTeamComboBox;
+    ComboBox positionComboBox;
+    ComboBox contractComboBox;
+    Label salaryComboLabel;
+    TextField salaryTextBox;
     Button completeButton;
     Button cancelButton;
     
@@ -40,17 +51,17 @@ public class NotesDialog extends Stage {
     String selection;
     
     // CONSTANTS FOR OUR UI
+    
     public static final String COMPLETE = "Complete";
     public static final String CANCEL = "Cancel";
-    public static final String TOPIC_PROMPT = "Note: ";
-    public static final String EDIT_Note_TITLE = "Edit Notes";
+    
     /**
      * Initializes this dialog so that it can be used for either adding
      * new schedule items or editing existing ones.
      * 
      * @param primaryStage The owner of this modal dialog.
      */
-    public NotesDialog(Stage primaryStage, Player curPitcher) {       
+    public EditPlayerDialog(Stage primaryStage) {       
         // MAKE THIS DIALOG MODAL, MEANING OTHERS WILL WAIT
         // FOR IT WHEN IT IS DISPLAYED
         initModality(Modality.WINDOW_MODAL);
@@ -64,14 +75,28 @@ public class NotesDialog extends Stage {
         
         // PUT THE HEADING IN THE GRID, NOTE THAT THE TEXT WILL DEPEND
         // ON WHETHER WE'RE ADDING OR EDITING
-        headingLabel = new Label("Notes: ");
-    
-        // NOW THE topic 
-        notesLabel = new Label(TOPIC_PROMPT);
-        notesTextField = new TextField();
+        headingLabel = new Label("Player Details ");
         
-        notesTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            curPitcher.setNotes(newValue);
+        ImageView playerImg = new ImageView();
+        playerImg.setImage(new Image("file:" + PATH_IMAGES + "players/AAA_PhotoMissing.jpg"));
+        
+        ImageView playerFlag = new ImageView();
+        playerFlag.setImage(new Image("file:" + PATH_IMAGES + "flags/USA.png"));
+        
+        nameLabel = new Label("Name");
+        positionLabel = new Label("sad");
+        fantasyTeamLabel = new Label("Fantasy Team: ");
+        positionComboLabel = new Label("Position: ");
+        contractComboLabel = new Label("Contract: ");
+        salaryComboLabel = new Label("Salary: ");
+        
+        fantasyTeamComboBox = new ComboBox();
+        positionComboBox = new ComboBox();
+        contractComboBox = new ComboBox();
+        
+        salaryTextBox = new TextField();
+                salaryTextBox.textProperty().addListener((observable, oldValue, newValue) -> {
+            //curPitcher.setNotes(newValue);
         });
                      
         // AND FINALLY, THE BUTTONS
@@ -81,29 +106,35 @@ public class NotesDialog extends Stage {
         // REGISTER EVENT HANDLERS FOR OUR BUTTONS
         EventHandler completeCancelHandler = (EventHandler<ActionEvent>) (ActionEvent ae) -> {
             Button sourceButton = (Button)ae.getSource();
-            NotesDialog.this.selection = sourceButton.getText();
-            NotesDialog.this.hide();
+            EditPlayerDialog.this.selection = sourceButton.getText();
+            EditPlayerDialog.this.hide();
         };
         completeButton.setOnAction(completeCancelHandler);
         cancelButton.setOnAction(completeCancelHandler);
       
         // NOW LET'S ARRANGE THEM ALL AT ONCE
         gridPane.add(headingLabel, 0, 0, 1, 1);
-        gridPane.add(notesTextField, 1, 0, 1, 1);
-        gridPane.add(completeButton, 0, 4, 1, 1);
-        gridPane.add(cancelButton, 1, 4, 1, 1);
+        gridPane.add(playerImg, 0, 1, 1, 3);
+        gridPane.add(playerFlag, 1, 1, 1, 1);
+        gridPane.add(nameLabel, 1, 2, 1, 1);
+        gridPane.add(positionLabel, 1, 3, 1, 1);
+        gridPane.add(fantasyTeamLabel, 0, 4, 1, 1);
+        gridPane.add(positionComboLabel, 0, 5, 1, 1);
+        gridPane.add(contractComboLabel, 0, 6, 1, 1);        
+        gridPane.add(salaryComboLabel, 0, 7, 1, 1);
+        gridPane.add(fantasyTeamComboBox, 1, 4, 2, 1);
+        gridPane.add(positionComboBox, 1, 5, 2, 1);
+        gridPane.add(contractComboBox, 1, 6, 2, 1);
+        gridPane.add(salaryTextBox, 1, 7, 1, 1);
+        gridPane.add(completeButton, 0, 8, 1, 1);
+        gridPane.add(cancelButton, 1, 8, 1, 1);
 
         // AND PUT THE GRID PANE IN THE WINDOW
         dialogScene = new Scene(gridPane);
         this.setScene(dialogScene);
     }
     
-    /**
-     * Accessor method for getting the selection the user made.
-     * 
-     * @return Either YES, NO, or CANCEL, depending on which
-     * button the user selected when this dialog was presented.
-     */
+    
     public String getSelection() {
         return selection;
     }
@@ -114,7 +145,7 @@ public class NotesDialog extends Stage {
     
     public void showEditLectureDialog() {
         // SET THE DIALOG TITLE
-        setTitle("Edit Notes");
+        setTitle("Edit Player");
                
         // AND OPEN IT UP
         this.showAndWait();
