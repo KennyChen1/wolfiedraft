@@ -14,8 +14,9 @@ public class WDK_StartupConstants
     public static final String PROPERTIES_FILE_NAME = "properties.xml";
     public static final String PROPERTIES_SCHEMA_FILE_NAME = "properties_schema.xsd";    
     public static final String PATH_DATA = "./data/";
-    public static final String PATH_HITTERS = "./data/Hitters.json.txt";
-    public static final String PATH_PITCHERS = "./data/Pitchers.json.txt";
+    public static final String PATH_HITTERS = "./data/Hitters.json";
+    public static final String PATH_PITCHERS = "./data/Pitchers.json";
+    public static final String PATH_PRO_TEAM = "./data/teams.json";
     public static final String PATH_DRAFTS = PATH_DATA + "drafts/";
     public static final String PATH_IMAGES = "images/";
     public static final String PATH_CSS = "wdk/css";

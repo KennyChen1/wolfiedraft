@@ -82,13 +82,18 @@ public class FileController {
     }
     
     
-    public JsonObject loadHitters(WDK_GUI gui) throws IOException{
+    public JsonObject loadHitters() throws IOException{
        
         JsonObject json = loadJSONFile(PATH_HITTERS);
         return json;
     }
-    public JsonObject loadPitchers(WDK_GUI gui) throws IOException{
+    public JsonObject loadPitchers() throws IOException{
         JsonObject json = loadJSONFile(PATH_PITCHERS);
+        //json.
+        return json; 
+    }
+    public JsonObject loadProTeams() throws IOException{
+        JsonObject json = loadJSONFile(PATH_PRO_TEAM);
         
         return json; 
     }

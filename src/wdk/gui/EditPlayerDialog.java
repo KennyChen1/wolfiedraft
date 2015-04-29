@@ -1,5 +1,6 @@
 package wdk.gui;
 
+import java.io.File;
 import wolfieballdraftkit.WDK_PropertyType;
 import static wdk.gui.WDK_GUI.CLASS_HEADING_LABEL;
 /*import static wdk.gui.WDK_GUI.CLASS_PROMPT_LABEL;
@@ -61,7 +62,7 @@ public class EditPlayerDialog extends Stage {
      * 
      * @param primaryStage The owner of this modal dialog.
      */
-    public EditPlayerDialog(Stage primaryStage) {       
+    public EditPlayerDialog(Stage primaryStage, Player player) {       
         // MAKE THIS DIALOG MODAL, MEANING OTHERS WILL WAIT
         // FOR IT WHEN IT IS DISPLAYED
         initModality(Modality.WINDOW_MODAL);
@@ -76,15 +77,22 @@ public class EditPlayerDialog extends Stage {
         // PUT THE HEADING IN THE GRID, NOTE THAT THE TEXT WILL DEPEND
         // ON WHETHER WE'RE ADDING OR EDITING
         headingLabel = new Label("Player Details ");
-        
         ImageView playerImg = new ImageView();
-        playerImg.setImage(new Image("file:" + PATH_IMAGES + "players/AAA_PhotoMissing.jpg"));
-        
+        String playerImgPath = PATH_IMAGES + "players/"+
+                player.getLastName() + player.getFirstName() +".jpg";
         ImageView playerFlag = new ImageView();
+        File f = new File(System.getProperty("user.dir") + "/" + playerImgPath);
+                
+        if(f.exists()){
+            playerImg.setImage(new Image("file:" + playerImgPath));
+        }else{
+            playerImg.setImage(new Image("file:" + PATH_IMAGES + "players/AAA_PhotoMissing.jpg"));
+        }
+        
         playerFlag.setImage(new Image("file:" + PATH_IMAGES + "flags/USA.png"));
         
-        nameLabel = new Label("Name");
-        positionLabel = new Label("sad");
+        nameLabel = new Label(player.getFirstName() + " " + player.getLastName());
+        positionLabel = new Label(player.getPosition());
         fantasyTeamLabel = new Label("Fantasy Team: ");
         positionComboLabel = new Label("Position: ");
         contractComboLabel = new Label("Contract: ");
@@ -143,7 +151,7 @@ public class EditPlayerDialog extends Stage {
         return selection.equals(COMPLETE);
     }
     
-    public void showEditLectureDialog() {
+    public void showEditPlayerDialog() {
         // SET THE DIALOG TITLE
         setTitle("Edit Player");
                

@@ -108,7 +108,7 @@ public class WDK_GUI {
     TableView<Hitter> hitterTable;
     TableView<Player> allPlayerTable;
     
-    ObservableList<Hitter> hittersList;
+    ObservableList<Hitter> tempHitterList;
     ObservableList<Pitcher> pitcherList;
     ObservableList<Player> playerList;
     
@@ -159,8 +159,14 @@ public class WDK_GUI {
     VBox mlbTeamsWorkspacePane;        
     Label mlbTeamsHeadingLabel;
     
-    public WDK_GUI(Stage initPrimaryStage) {
+    FileController a = new FileController();
+    JsonArray pitchersList;
+    JsonArray hitterList;
+    
+    public WDK_GUI(Stage initPrimaryStage) throws IOException {
         primaryStage = initPrimaryStage;
+        pitchersList  = a.loadPitchers().getJsonArray("Pitchers");
+        hitterList = a.loadHitters().getJsonArray("Hitters");
     }
     
     /**
@@ -308,7 +314,7 @@ public class WDK_GUI {
         availPlayersHeadingLabel = initChildLabel(availPlayersWorkspacePane, WDK_PropertyType.AVAILABLE_PLAYERS_HEADING_LABEL, CLASS_HEADING_LABEL);
         
         HBox bar = new HBox();
-        addButton = initChildButton(bar, WDK_PropertyType.ADD_ICON, WDK_PropertyType.ADD_LECTURE_TOOLTIP, true);
+        addButton = initChildButton(bar, WDK_PropertyType.ADD_ICON, WDK_PropertyType.ADD_LECTURE_TOOLTIP, false);
         removeButton = initChildButton(bar, WDK_PropertyType.MINUS_ICON, WDK_PropertyType.REMOVE_LECTURE_TOOLTIP, true);
         availPlayersHeadingLabel = initChildLabel(bar, WDK_PropertyType.SEARCH_HEADING_LABEL, CLASS_HEADING_LABEL);
         searchBar = initGridTextField(bar, 20, "", true);
@@ -394,32 +400,28 @@ public class WDK_GUI {
        
         pitcherList = FXCollections.observableArrayList();
         
-        try {
-            FileController a = new FileController();
-            JsonArray list = a.loadPitchers(this).getJsonArray("Pitchers");
+           
             
-            for (int i = 0; i < list.size(); i++) {
-                String fName = list.getJsonObject(i).getString("FIRST_NAME");
-                String lName = list.getJsonObject(i).getString("LAST_NAME");
-                String team = list.getJsonObject(i).getString("TEAM");
-                int year = Integer.parseInt(list.getJsonObject(i).getString("YEAR_OF_BIRTH"));
-                String note = list.getJsonObject(i).getString("NOTES");
-                String nation = list.getJsonObject(i).getString("NATION_OF_BIRTH");
-                double ip = Double.parseDouble(list.getJsonObject(i).getString("IP"));
-                int earnedRuns = Integer.parseInt(list.getJsonObject(i).getString("ER"));
-                int wins = Integer.parseInt(list.getJsonObject(i).getString("W"));
-                int saves = Integer.parseInt(list.getJsonObject(i).getString("SV"));
-                int hits = Integer.parseInt(list.getJsonObject(i).getString("H"));
-                int balls = Integer.parseInt(list.getJsonObject(i).getString("BB"));
-                int outs = Integer.parseInt(list.getJsonObject(i).getString("K")); 
+            for (int i = 0; i < pitchersList.size(); i++) {
+                String fName = pitchersList.getJsonObject(i).getString("FIRST_NAME");
+                String lName = pitchersList.getJsonObject(i).getString("LAST_NAME");
+                String team = pitchersList.getJsonObject(i).getString("TEAM");
+                int year = Integer.parseInt(pitchersList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
+                String note = pitchersList.getJsonObject(i).getString("NOTES");
+                String nation = pitchersList.getJsonObject(i).getString("NATION_OF_BIRTH");
+                double ip = Double.parseDouble(pitchersList.getJsonObject(i).getString("IP"));
+                int earnedRuns = Integer.parseInt(pitchersList.getJsonObject(i).getString("ER"));
+                int wins = Integer.parseInt(pitchersList.getJsonObject(i).getString("W"));
+                int saves = Integer.parseInt(pitchersList.getJsonObject(i).getString("SV"));
+                int hits = Integer.parseInt(pitchersList.getJsonObject(i).getString("H"));
+                int balls = Integer.parseInt(pitchersList.getJsonObject(i).getString("BB"));
+                int outs = Integer.parseInt(pitchersList.getJsonObject(i).getString("K")); 
                 Pitcher b = new Pitcher(fName, lName, team, year, note, nation, ip, earnedRuns,
                     wins, saves, hits, balls, outs);
                 pitcherList.add(b);
             }
             
-        } catch (IOException ex) {
-            Logger.getLogger(WDK_GUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
        
         pitcherTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
                 birthyearColumn, winsColumn, savesColumn, strikeoutsColumn, earnedRunsAvgColumn,
@@ -459,36 +461,27 @@ public class WDK_GUI {
         notesHitColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
         notesHitColumn.setCellFactory(TextFieldTableCell.<String>forTableColumn());
 
-        hittersList = FXCollections.observableArrayList();
-        
-        try {
-            FileController a = new FileController();
-            JsonArray list = a.loadHitters(this).getJsonArray("Hitters");
-            
-            for (int i = 0; i < list.size(); i++) {
-                String fName = list.getJsonObject(i).getString("FIRST_NAME");
-                String lName = list.getJsonObject(i).getString("LAST_NAME");
-                String team = list.getJsonObject(i).getString("TEAM");
-                int year = Integer.parseInt(list.getJsonObject(i).getString("YEAR_OF_BIRTH"));
-                String note = list.getJsonObject(i).getString("NOTES");
-                String nation = list.getJsonObject(i).getString("NATION_OF_BIRTH");
-                String positions = list.getJsonObject(i).getString("QP");
-                int ab = Integer.parseInt(list.getJsonObject(i).getString("AB"));
-                int hits = Integer.parseInt(list.getJsonObject(i).getString("H"));
-                int runs = Integer.parseInt(list.getJsonObject(i).getString("R"));
-                int homeRuns = Integer.parseInt(list.getJsonObject(i).getString("SB"));
-                int runsBattedIn = Integer.parseInt(list.getJsonObject(i).getString("RBI"));
-                int stolenBases = Integer.parseInt(list.getJsonObject(i).getString("SB"));
-                Hitter b = new Hitter(fName, lName, team, year, note, nation, positions,
-                    ab, runs, hits, homeRuns, runsBattedIn, stolenBases);
-                hittersList.add(b);
-                hitterTable.setItems(hittersList);                
-            }
-            
-        } catch (IOException ex) {
-            Logger.getLogger(WDK_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        tempHitterList = FXCollections.observableArrayList();
+                   
+        for (int i = 0; i < hitterList.size(); i++) {
+            String fName = hitterList.getJsonObject(i).getString("FIRST_NAME");
+            String lName = hitterList.getJsonObject(i).getString("LAST_NAME");
+            String team = hitterList.getJsonObject(i).getString("TEAM");
+            int year = Integer.parseInt(hitterList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
+            String note = hitterList.getJsonObject(i).getString("NOTES");
+            String nation = hitterList.getJsonObject(i).getString("NATION_OF_BIRTH");
+            String positions = hitterList.getJsonObject(i).getString("QP");
+            int ab = Integer.parseInt(hitterList.getJsonObject(i).getString("AB"));
+            int hits = Integer.parseInt(hitterList.getJsonObject(i).getString("H"));
+            int runs = Integer.parseInt(hitterList.getJsonObject(i).getString("R"));
+            int homeRuns = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
+            int runsBattedIn = Integer.parseInt(hitterList.getJsonObject(i).getString("RBI"));
+            int stolenBases = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
+            Hitter b = new Hitter(fName, lName, team, year, note, nation, positions,
+                ab, runs, hits, homeRuns, runsBattedIn, stolenBases);
+            tempHitterList.add(b);
+            hitterTable.setItems(tempHitterList);                
         }
-        
         
         hitterTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
                 birthyearColumn, runsColumn, homerunsColumn, runsBattedInColumn, 
@@ -529,96 +522,86 @@ public class WDK_GUI {
         
         playerList = FXCollections.observableArrayList();
         
-        try {
-            FileController a = new FileController();
-            JsonArray list = a.loadHitters(this).getJsonArray("Hitters");
-            
-            for (int i = 0; i < list.size(); i++) {
-                String fName = list.getJsonObject(i).getString("FIRST_NAME");
-                String lName = list.getJsonObject(i).getString("LAST_NAME");
-                String team = list.getJsonObject(i).getString("TEAM");
-                int year = Integer.parseInt(list.getJsonObject(i).getString("YEAR_OF_BIRTH"));
-                String note = list.getJsonObject(i).getString("NOTES");
-                String positions = list.getJsonObject(i).getString("QP");
-                int ab = Integer.parseInt(list.getJsonObject(i).getString("AB"));
-                int hits = Integer.parseInt(list.getJsonObject(i).getString("H"));
-                int runs = Integer.parseInt(list.getJsonObject(i).getString("R"));
-                int homeRuns = Integer.parseInt(list.getJsonObject(i).getString("HR"));
-                int runsBattedIn = Integer.parseInt(list.getJsonObject(i).getString("RBI"));
-                double stolenBases = Integer.parseInt(list.getJsonObject(i).getString("SB"));
+        for (int i = 0; i < hitterList.size(); i++) {
+            String fName = hitterList.getJsonObject(i).getString("FIRST_NAME");
+            String lName = hitterList.getJsonObject(i).getString("LAST_NAME");
+            String team = hitterList.getJsonObject(i).getString("TEAM");
+            int year = Integer.parseInt(hitterList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
+            String note = hitterList.getJsonObject(i).getString("NOTES");
+            String positions = hitterList.getJsonObject(i).getString("QP");
+            int ab = Integer.parseInt(hitterList.getJsonObject(i).getString("AB"));
+            int hits = Integer.parseInt(hitterList.getJsonObject(i).getString("H"));
+            int runs = Integer.parseInt(hitterList.getJsonObject(i).getString("R"));
+            int homeRuns = Integer.parseInt(hitterList.getJsonObject(i).getString("HR"));
+            int runsBattedIn = Integer.parseInt(hitterList.getJsonObject(i).getString("RBI"));
+            double stolenBases = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
                 
-                double sb;
-                if(ab == 0){
-                    sb = -1;
-                } else{
-                    DecimalFormat df = new DecimalFormat("#.000"); 
-                    sb = Double.parseDouble(df.format(1.0*hits/ab));
-                }
-                
-                Player b = new Player(fName, lName, team, positions, year, note, 
-                        runs, homeRuns, runsBattedIn, stolenBases, sb);
-                playerList.add(b);
+            double sb;
+            if(ab == 0){
+                sb = -1;
+            } else{
+                DecimalFormat df = new DecimalFormat("#.000"); 
+                sb = Double.parseDouble(df.format(1.0*hits/ab));
             }
-            JsonArray pList = a.loadPitchers(this).getJsonArray("Pitchers");
-            for (int i = 0; i < pList.size(); i++) {
-                String fName = pList.getJsonObject(i).getString("FIRST_NAME");
-                String lName = pList.getJsonObject(i).getString("LAST_NAME");
-                String team = pList.getJsonObject(i).getString("TEAM");
-                int year = Integer.parseInt(pList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
-                String note = pList.getJsonObject(i).getString("NOTES");
-                double ip = Double.parseDouble(pList.getJsonObject(i).getString("IP"));
-                int earnedRuns = Integer.parseInt(pList.getJsonObject(i).getString("ER"));
-                int wins = Integer.parseInt(pList.getJsonObject(i).getString("W"));
-                int saves = Integer.parseInt(pList.getJsonObject(i).getString("SV"));
-                int hits = Integer.parseInt(pList.getJsonObject(i).getString("H"));
-                int balls = Integer.parseInt(pList.getJsonObject(i).getString("BB"));
-                int outs = Integer.parseInt(pList.getJsonObject(i).getString("K")); 
-                
-                double era, whip;
-                
-                if(ip == 0){
-                    era = -1; whip = -1;
-                } else{
-                    DecimalFormat df = new DecimalFormat("#.000"); 
-                    era = Double.parseDouble(df.format(earnedRuns*9/ip));
-                    whip = Double.parseDouble(df.format((balls + hits)/ip));
-                }
-                
-                Player c = new Player(fName, lName, team, "P", year, note, 
-                        wins, saves, outs, era, whip);
-                playerList.add(c);
-            }
-            allPlayerTable.setItems(playerList);  
+
+            Player b = new Player(fName, lName, team, positions, year, note, 
+                    runs, homeRuns, runsBattedIn, stolenBases, sb);
+            playerList.add(b);
+        }
             
-        } catch (IOException ex) {
-            Logger.getLogger(WDK_GUI.class.getName()).log(Level.SEVERE, null, ex);
+        for (int i = 0; i < pitchersList.size(); i++) {
+            String fName = pitchersList.getJsonObject(i).getString("FIRST_NAME");
+            String lName = pitchersList.getJsonObject(i).getString("LAST_NAME");
+            String team = pitchersList.getJsonObject(i).getString("TEAM");
+            int year = Integer.parseInt(pitchersList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
+            String note = pitchersList.getJsonObject(i).getString("NOTES");
+            double ip = Double.parseDouble(pitchersList.getJsonObject(i).getString("IP"));
+            int earnedRuns = Integer.parseInt(pitchersList.getJsonObject(i).getString("ER"));
+            int wins = Integer.parseInt(pitchersList.getJsonObject(i).getString("W"));
+            int saves = Integer.parseInt(pitchersList.getJsonObject(i).getString("SV"));
+            int hits = Integer.parseInt(pitchersList.getJsonObject(i).getString("H"));
+            int balls = Integer.parseInt(pitchersList.getJsonObject(i).getString("BB"));
+            int outs = Integer.parseInt(pitchersList.getJsonObject(i).getString("K")); 
+
+            double era, whip;
+
+            if(ip == 0){
+                era = -1; whip = -1;
+            } else{
+                DecimalFormat df = new DecimalFormat("#.000"); 
+                era = Double.parseDouble(df.format(earnedRuns*9/ip));
+                whip = Double.parseDouble(df.format((balls + hits)/ip));
+            }
+
+            Player c = new Player(fName, lName, team, "P", year, note, 
+                    wins, saves, outs, era, whip);
+            playerList.add(c);
         }
         
+        allPlayerTable.setItems(playerList);  
+          
         allPlayerTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
                 birthyearColumn, runsPerWinsColumn, homePerSaveColumn, runsBattedInPerOutColumn, 
                     stealsPerERAColumn, avgPerWhipColumn, estimValueColumn, notesAllColumn);
      }
     
     private void fillTable(String[] sel){
-         try {
-              hittersList = FXCollections.observableArrayList();
-            FileController a = new FileController();
-            JsonArray list = a.loadHitters(this).getJsonArray("Hitters");
             
-            for (int i = 0; i < list.size(); i++) {
-                String fName = list.getJsonObject(i).getString("FIRST_NAME");
-                String lName = list.getJsonObject(i).getString("LAST_NAME");
-                String team = list.getJsonObject(i).getString("TEAM");
-                int year = Integer.parseInt(list.getJsonObject(i).getString("YEAR_OF_BIRTH"));
-                String note = list.getJsonObject(i).getString("NOTES");
-                String nation = list.getJsonObject(i).getString("NATION_OF_BIRTH");
-                String positions = list.getJsonObject(i).getString("QP");
-                int ab = Integer.parseInt(list.getJsonObject(i).getString("AB"));
-                int hits = Integer.parseInt(list.getJsonObject(i).getString("H"));
-                int runs = Integer.parseInt(list.getJsonObject(i).getString("R"));
-                int homeRuns = Integer.parseInt(list.getJsonObject(i).getString("SB"));
-                int runsBattedIn = Integer.parseInt(list.getJsonObject(i).getString("RBI"));
-                int stolenBases = Integer.parseInt(list.getJsonObject(i).getString("SB"));
+            tempHitterList = FXCollections.observableArrayList();            
+            for (int i = 0; i < hitterList.size(); i++) {
+                String fName = hitterList.getJsonObject(i).getString("FIRST_NAME");
+                String lName = hitterList.getJsonObject(i).getString("LAST_NAME");
+                String team = hitterList.getJsonObject(i).getString("TEAM");
+                int year = Integer.parseInt(hitterList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
+                String note = hitterList.getJsonObject(i).getString("NOTES");
+                String nation = hitterList.getJsonObject(i).getString("NATION_OF_BIRTH");
+                String positions = hitterList.getJsonObject(i).getString("QP");
+                int ab = Integer.parseInt(hitterList.getJsonObject(i).getString("AB"));
+                int hits = Integer.parseInt(hitterList.getJsonObject(i).getString("H"));
+                int runs = Integer.parseInt(hitterList.getJsonObject(i).getString("R"));
+                int homeRuns = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
+                int runsBattedIn = Integer.parseInt(hitterList.getJsonObject(i).getString("RBI"));
+                int stolenBases = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
                
                 boolean added = false;
                 String[] split = positions.split("_");
@@ -630,7 +613,7 @@ public class WDK_GUI {
                         if(!added){
                             Hitter b = new Hitter(fName, lName, team, year, note, nation, positions,
                           ab, runs, hits, homeRuns, runsBattedIn, stolenBases);
-                            hittersList.add(b);
+                            tempHitterList.add(b);
                             added = true;
                         } else{
                             added = false;
@@ -639,12 +622,10 @@ public class WDK_GUI {
                     }
                 }
                 
-                hitterTable.setItems(hittersList);                
+                hitterTable.setItems(tempHitterList);                
             }
             
-        } catch (IOException ex) {
-            Logger.getLogger(WDK_GUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
     
     private void replaceTables(TableView table){
@@ -676,9 +657,9 @@ public class WDK_GUI {
         } else {
             ObservableList<Hitter> dummy = FXCollections.observableArrayList();
         
-            for (int i = 0; i < hittersList.size(); i++) {
-                if(compareStrBeg(hittersList.get(i).getFirstName(), search) || compareStrBeg(hittersList.get(i).getLastName(), search)){
-                    dummy.add(hittersList.get(i));
+            for (int i = 0; i < tempHitterList.size(); i++) {
+                if(compareStrBeg(tempHitterList.get(i).getFirstName(), search) || compareStrBeg(tempHitterList.get(i).getLastName(), search)){
+                    dummy.add(tempHitterList.get(i));
                 }
                 hitterTable.setItems(dummy);                
             }
@@ -697,7 +678,7 @@ public class WDK_GUI {
         newDraftButton.setOnAction(e -> {
             NewDraftDialog a = new NewDraftDialog(primaryStage);
             a.showDialog();
-         wdkPane.setCenter(fantasyTeamWorkspacePane);
+            wdkPane.setCenter(fantasyTeamWorkspacePane);
         });
         homeButton.setOnAction(e -> {
          wdkPane.setCenter(availPlayersWorkspacePane);
@@ -713,6 +694,15 @@ public class WDK_GUI {
         });
         MLBTeamButton.setOnAction(e -> {
             initMLBTeamsWorkspace();
+        });
+        
+        addButton.setOnAction(e -> {
+            try {
+                AddPlayerDialog a = new AddPlayerDialog(primaryStage);
+                a.showAddPlayerDialog();
+            } catch (IOException ex) {
+                Logger.getLogger(WDK_GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
         allButton.setOnAction(e -> {
@@ -774,11 +764,9 @@ public class WDK_GUI {
         
         allPlayerTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
-                // OPEN UP THE LECTURE EDITOR
-                
-                
-                EditPlayerDialog a = new EditPlayerDialog(primaryStage);
-                a.showEditLectureDialog();
+                Player b = allPlayerTable.getSelectionModel().getSelectedItem();
+                EditPlayerDialog a = new EditPlayerDialog(primaryStage, b);
+                a.showEditPlayerDialog();
             }
         });
         
@@ -790,7 +778,8 @@ public class WDK_GUI {
             new EventHandler<CellEditEvent<Player, String>>() {
         @Override
         public void handle(CellEditEvent<Player, String> t) {
-            (t.getTableView().getItems().get(t.getTablePosition().getRow())).setNotes(t.getNewValue());                    
+            t.getTableView().getItems().get(t.getTablePosition().getRow()).setNotes(t.getNewValue());
+            
         }});
         notesHitColumn.setOnEditCommit(
             new EventHandler<CellEditEvent<Player, String>>() {
