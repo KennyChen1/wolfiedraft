@@ -61,6 +61,7 @@ public class EditPlayerDialog extends Stage {
      * new schedule items or editing existing ones.
      * 
      * @param primaryStage The owner of this modal dialog.
+     * @param player
      */
     public EditPlayerDialog(Stage primaryStage, Player player) {       
         // MAKE THIS DIALOG MODAL, MEANING OTHERS WILL WAIT
@@ -100,7 +101,12 @@ public class EditPlayerDialog extends Stage {
         
         fantasyTeamComboBox = new ComboBox();
         positionComboBox = new ComboBox();
+        positionComboBox.getItems().addAll(player.getPosition().split("_"));
+        positionComboBox.setValue(player.getPosition().split("_")[0]);
+        
         contractComboBox = new ComboBox();
+        contractComboBox.getItems().addAll("S2", "S1", "X");
+        contractComboBox.setValue("S2");
         
         salaryTextBox = new TextField();
                 salaryTextBox.textProperty().addListener((observable, oldValue, newValue) -> {

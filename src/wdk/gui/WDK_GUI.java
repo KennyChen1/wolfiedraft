@@ -111,6 +111,7 @@ public class WDK_GUI {
     ObservableList<Hitter> tempHitterList;
     ObservableList<Pitcher> pitcherList;
     ObservableList<Player> playerList;
+    ObservableList<Hitter> allHitterList;
     
     //THE TABLE COLUMNS
     TableColumn firstColumn;    TableColumn lastColumn;         TableColumn proTeamColumn;
@@ -163,10 +164,12 @@ public class WDK_GUI {
     JsonArray pitchersList;
     JsonArray hitterList;
     
+    
     public WDK_GUI(Stage initPrimaryStage) throws IOException {
         primaryStage = initPrimaryStage;
         pitchersList  = a.loadPitchers().getJsonArray("Pitchers");
         hitterList = a.loadHitters().getJsonArray("Hitters");
+        
     }
     
     /**
@@ -315,7 +318,7 @@ public class WDK_GUI {
         
         HBox bar = new HBox();
         addButton = initChildButton(bar, WDK_PropertyType.ADD_ICON, WDK_PropertyType.ADD_LECTURE_TOOLTIP, false);
-        removeButton = initChildButton(bar, WDK_PropertyType.MINUS_ICON, WDK_PropertyType.REMOVE_LECTURE_TOOLTIP, true);
+        removeButton = initChildButton(bar, WDK_PropertyType.MINUS_ICON, WDK_PropertyType.REMOVE_LECTURE_TOOLTIP, false);
         availPlayersHeadingLabel = initChildLabel(bar, WDK_PropertyType.SEARCH_HEADING_LABEL, CLASS_HEADING_LABEL);
         searchBar = initGridTextField(bar, 20, "", true);
         
@@ -399,9 +402,7 @@ public class WDK_GUI {
         notesPitchColumn.setCellFactory(TextFieldTableCell.<String>forTableColumn());
        
         pitcherList = FXCollections.observableArrayList();
-        
-           
-            
+                    
             for (int i = 0; i < pitchersList.size(); i++) {
                 String fName = pitchersList.getJsonObject(i).getString("FIRST_NAME");
                 String lName = pitchersList.getJsonObject(i).getString("LAST_NAME");
@@ -417,11 +418,10 @@ public class WDK_GUI {
                 int balls = Integer.parseInt(pitchersList.getJsonObject(i).getString("BB"));
                 int outs = Integer.parseInt(pitchersList.getJsonObject(i).getString("K")); 
                 Pitcher b = new Pitcher(fName, lName, team, year, note, nation, ip, earnedRuns,
-                    wins, saves, hits, balls, outs);
+                    wins, saves, hits,balls, outs);
                 pitcherList.add(b);
             }
             
-        
        
         pitcherTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
                 birthyearColumn, winsColumn, savesColumn, strikeoutsColumn, earnedRunsAvgColumn,
@@ -451,7 +451,7 @@ public class WDK_GUI {
         firstColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         lastColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         proTeamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
-        positionColumn.setCellValueFactory(new PropertyValueFactory<>("positions"));
+        positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         birthyearColumn.setCellValueFactory(new PropertyValueFactory<>("birthYear"));
         runsColumn.setCellValueFactory(new PropertyValueFactory<>("runs"));
         homerunsColumn.setCellValueFactory(new PropertyValueFactory<>("homeRuns"));
@@ -461,7 +461,7 @@ public class WDK_GUI {
         notesHitColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
         notesHitColumn.setCellFactory(TextFieldTableCell.<String>forTableColumn());
 
-        tempHitterList = FXCollections.observableArrayList();
+        allHitterList = FXCollections.observableArrayList();
                    
         for (int i = 0; i < hitterList.size(); i++) {
             String fName = hitterList.getJsonObject(i).getString("FIRST_NAME");
@@ -479,9 +479,10 @@ public class WDK_GUI {
             int stolenBases = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
             Hitter b = new Hitter(fName, lName, team, year, note, nation, positions,
                 ab, runs, hits, homeRuns, runsBattedIn, stolenBases);
-            tempHitterList.add(b);
-            hitterTable.setItems(tempHitterList);                
+            allHitterList.add(b);
+                          
         }
+        hitterTable.setItems(allHitterList);  
         
         hitterTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
                 birthyearColumn, runsColumn, homerunsColumn, runsBattedInColumn, 
@@ -511,12 +512,14 @@ public class WDK_GUI {
         proTeamColumn.setCellValueFactory(new PropertyValueFactory<>("team"));
         positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         birthyearColumn.setCellValueFactory(new PropertyValueFactory<>("birthYear"));
+        
         runsPerWinsColumn.setCellValueFactory(new PropertyValueFactory<>("RW"));
         homePerSaveColumn.setCellValueFactory(new PropertyValueFactory<>("HRSV"));
         runsBattedInPerOutColumn.setCellValueFactory(new PropertyValueFactory<>("RBIK"));
         stealsPerERAColumn.setCellValueFactory(new PropertyValueFactory<>("SBERA"));
         avgPerWhipColumn.setCellValueFactory(new PropertyValueFactory<>("BAWHIP"));
         estimValueColumn.setCellValueFactory(new PropertyValueFactory<>("eta"));
+        
         notesAllColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
         notesAllColumn.setCellFactory(TextFieldTableCell.<String>forTableColumn());
         
@@ -588,32 +591,15 @@ public class WDK_GUI {
     private void fillTable(String[] sel){
             
             tempHitterList = FXCollections.observableArrayList();            
-            for (int i = 0; i < hitterList.size(); i++) {
-                String fName = hitterList.getJsonObject(i).getString("FIRST_NAME");
-                String lName = hitterList.getJsonObject(i).getString("LAST_NAME");
-                String team = hitterList.getJsonObject(i).getString("TEAM");
-                int year = Integer.parseInt(hitterList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
-                String note = hitterList.getJsonObject(i).getString("NOTES");
-                String nation = hitterList.getJsonObject(i).getString("NATION_OF_BIRTH");
-                String positions = hitterList.getJsonObject(i).getString("QP");
-                int ab = Integer.parseInt(hitterList.getJsonObject(i).getString("AB"));
-                int hits = Integer.parseInt(hitterList.getJsonObject(i).getString("H"));
-                int runs = Integer.parseInt(hitterList.getJsonObject(i).getString("R"));
-                int homeRuns = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
-                int runsBattedIn = Integer.parseInt(hitterList.getJsonObject(i).getString("RBI"));
-                int stolenBases = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
-               
+            for (int i = 0; i < allHitterList.size(); i++) {
                 boolean added = false;
-                String[] split = positions.split("_");
+                String[] split = allHitterList.get(i).getPosition().split("_");
                 
                 for(int y = 0; y < split.length; y++){
-                    for(int z = 0; z < sel.length; z++){
-                        
+                    for(int z = 0; z < sel.length; z++){                        
                     if(split[y].equals(sel[z])){
-                        if(!added){
-                            Hitter b = new Hitter(fName, lName, team, year, note, nation, positions,
-                          ab, runs, hits, homeRuns, runsBattedIn, stolenBases);
-                            tempHitterList.add(b);
+                        if(!added){                           
+                            tempHitterList.add(allHitterList.get(i));
                             added = true;
                         } else{
                             added = false;
@@ -621,19 +607,15 @@ public class WDK_GUI {
                     }              
                     }
                 }
-                
-                hitterTable.setItems(tempHitterList);                
             }
-            
-        
+        //hitterTable.setItems(tempHitterList);
     }
     
-    private void replaceTables(TableView table){
+    public void replaceTables(TableView table){
         int x = availPlayersWorkspacePane.getChildren().size();
         availPlayersWorkspacePane.getChildren().remove(x-1);
         availPlayersWorkspacePane.getChildren().add(table);
-
-    }
+}
     
     private void autoSearchTable(String search){
         if(allButton.isSelected()){
@@ -658,7 +640,8 @@ public class WDK_GUI {
             ObservableList<Hitter> dummy = FXCollections.observableArrayList();
         
             for (int i = 0; i < tempHitterList.size(); i++) {
-                if(compareStrBeg(tempHitterList.get(i).getFirstName(), search) || compareStrBeg(tempHitterList.get(i).getLastName(), search)){
+                //System.out.println(tempHitterList.size());
+                if(compareStrBeg(tempHitterList.get(i).getFirstName(), search) || compareStrBeg(allHitterList.get(i).getLastName(), search)){
                     dummy.add(tempHitterList.get(i));
                 }
                 hitterTable.setItems(dummy);                
@@ -672,7 +655,6 @@ public class WDK_GUI {
         else
             return false;
     }
-    
     
     private void initEventHandlers() throws IOException {
         newDraftButton.setOnAction(e -> {
@@ -698,7 +680,7 @@ public class WDK_GUI {
         
         addButton.setOnAction(e -> {
             try {
-                AddPlayerDialog a = new AddPlayerDialog(primaryStage);
+                AddPlayerDialog a = new AddPlayerDialog(primaryStage, this);
                 a.showAddPlayerDialog();
             } catch (IOException ex) {
                 Logger.getLogger(WDK_GUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -765,8 +747,14 @@ public class WDK_GUI {
         allPlayerTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 Player b = allPlayerTable.getSelectionModel().getSelectedItem();
-                EditPlayerDialog a = new EditPlayerDialog(primaryStage, b);
-                a.showEditPlayerDialog();
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, b);
+                x.showEditPlayerDialog();
+            }
+        });
+        pitcherTable.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, pitcherTable.getSelectionModel().getSelectedItem());
+                x.showEditPlayerDialog();
             }
         });
         

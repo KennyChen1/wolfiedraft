@@ -57,6 +57,16 @@ public class Player {
         this.BAWHIP = BAWHIP;
         
     }
+    
+    public Player(String firstName, String lastName, String team, String position){
+        this.firstName = firstName;        
+        this.lastName = lastName;
+        this.team = team;
+        this.position = position;
+    }
+    
+    
+    
     // BELOW ARE ALL THE ACCESSOR METHODS FOR A COURSE
     // AND THE MUTATOR METHODS. NOTE THAT WE'LL NEED TO CALL
     // THESE AS USERS INPUT VALUES IN THE GUI

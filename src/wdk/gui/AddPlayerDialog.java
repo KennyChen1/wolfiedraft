@@ -26,6 +26,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,8 +34,10 @@ import javax.json.JsonArray;
 import javax.json.JsonValue;
 import properties_manager.PropertiesManager;
 import wdk.controller.FileController;
+import wdk.data.Hitter;
 import wdk.data.Pitcher;
 import wdk.gui.WDK_GUI;
+import wdk.gui.UnfilledDialog;
 import wdk.data.Player;
 import static wolfieballdraftkit.WDK_StartupConstants.*;
 
@@ -61,7 +64,6 @@ public class AddPlayerDialog extends Stage {
     String[] posList = {"C", "1B", "3B", "2B", "SS", "OF", "P"};
     CheckBox cBox;  CheckBox oneBox;  CheckBox threeBox;  CheckBox twoBox;  
     CheckBox ssBox;  CheckBox ofBox;  CheckBox pBox;
-    CheckBox[] checkBoxList = {cBox, oneBox, threeBox, twoBox, ssBox, ofBox, pBox};
     // THIS IS FOR KEEPING TRACK OF WHICH BUTTON THE USER PRESSED
     String selection;
     
@@ -78,7 +80,7 @@ public class AddPlayerDialog extends Stage {
      * @param primaryStage The owner of this modal dialog.
      * @throws java.io.IOException
      */
-    public AddPlayerDialog(Stage primaryStage) throws IOException {       
+    public AddPlayerDialog(Stage primaryStage, WDK_GUI gui) throws IOException {       
         // MAKE THIS DIALOG MODAL, MEANING OTHERS WILL WAIT
         // FOR IT WHEN IT IS DISPLAYED
         initModality(Modality.WINDOW_MODAL);
@@ -109,14 +111,16 @@ public class AddPlayerDialog extends Stage {
         }
         
         HBox boxBox = new HBox();
-        for(int i = 0; i < posList.length; i++){
-            checkBoxList[i] = new CheckBox(posList[i]);
-            checkBoxList[i].setPadding(new Insets(0, 5, 10, 0));
-            
-            boxBox.getChildren().add(checkBoxList[i]);
-        }
-        main.getChildren().add(boxBox);
         
+        cBox = initCheckBox(posList[0], boxBox);
+        oneBox = initCheckBox(posList[1], boxBox);
+        threeBox = initCheckBox(posList[2], boxBox);
+        twoBox = initCheckBox(posList[3], boxBox);  
+        ssBox = initCheckBox(posList[4], boxBox);  
+        ofBox = initCheckBox(posList[5], boxBox);
+        pBox = initCheckBox(posList[6], boxBox);
+        
+        main.getChildren().add(boxBox);
                      
         // AND FINALLY, THE BUTTONS
         completeButton = new Button(COMPLETE);
@@ -131,7 +135,35 @@ public class AddPlayerDialog extends Stage {
             AddPlayerDialog.this.selection = sourceButton.getText();
             AddPlayerDialog.this.hide();
         };
-        completeButton.setOnAction(completeCancelHandler);
+        completeButton.setOnAction(e -> {
+            CheckBox[] checkBoxList = {cBox, oneBox, threeBox, twoBox, ssBox, ofBox, pBox};
+            boolean completed = false;
+            String posStr = "";
+            for(int i = 0; i < checkBoxList.length; i++)
+                    if(checkBoxList[i].isSelected()){
+                        posStr = posStr + posList[i] + "_";
+                        completed = true;
+                    }
+            if(posStr.length() > 0)
+                posStr = posStr.substring(0, posStr.length()-1);
+            if((!completed || firstNameText.getText().equals("") || lastNameText.getText().equals("") || 
+                    proTeamComboBox.getSelectionModel().getSelectedItem().toString().equals(""))){
+                UnfilledDialog aa = new UnfilledDialog(primaryStage);
+                aa.showAndWait();
+            } else{
+            if(pBox.isSelected()){
+                Pitcher x = new Pitcher(firstNameText.getText(), lastNameText.getText(), 
+                        proTeamComboBox.getSelectionModel().getSelectedItem().toString(), posStr);
+                gui.pitcherList.add(x);
+            }
+            
+            Hitter x = new Hitter(firstNameText.getText(), lastNameText.getText(), 
+                        proTeamComboBox.getSelectionModel().getSelectedItem().toString(), posStr);
+                gui.allHitterList.add(x);
+            this.close();
+            
+            }});
+                
         cancelButton.setOnAction(completeCancelHandler);
       
         // NOW LET'S ARRANGE THEM ALL AT ONCE
@@ -164,5 +196,12 @@ public class AddPlayerDialog extends Stage {
                
         // AND OPEN IT UP
         this.showAndWait();
+    }
+    
+    private CheckBox initCheckBox(String label, Pane container){
+        CheckBox cb = new CheckBox(label);
+        cb.setPadding(new Insets(0, 5, 10, 0));
+        container.getChildren().add(cb);
+        return cb;
     }
 }

@@ -8,7 +8,6 @@ public class Pitcher extends Player{
     int earnedRuns;
     int wins;
     int saves;
-    String position;
     int hits;
     int basesOnballs;
     int strikeOuts;
@@ -36,6 +35,10 @@ public class Pitcher extends Player{
             this.WHIP = Double.parseDouble(df.format((basesOnballs + hits)/IP));
         }
         
+    }
+    
+    public Pitcher(String firstName, String lastName, String team, String position){
+        super(firstName, lastName, team, position);
     }
     
     public double getIP(){   
