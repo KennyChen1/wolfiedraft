@@ -18,6 +18,7 @@
         <property name="EXIT_ICON"          value="Exit.png"></property>        
         <property name="ADD_ICON"           value="Add.png"></property>
         <property name="MINUS_ICON"         value="Minus.png"></property>
+		<property name="EDIT_ICON"         value="Edit.png"></property>
         <property name="MOVE_UP_ICON"       value="MoveUp.png"></property>
         <property name="MOVE_DOWN_ICON"     value="MoveDown.png"></property>
         
@@ -32,11 +33,10 @@
         <property name="ADD_ITEM_TOOLTIP"           value="Add Schedule Item"></property>
         <property name="REMOVE_ITEM_TOOLTIP"        value="Remove Schedule Item"></property>
         <property name="ADD_TOOLTIP"     		   	value="Add Player"></property>
-        <property name="REMOVE_TOOLTIP"   			value="Remove Player"></property>
-        <property name="MOVE_UP_LECTURE_TOOLTIP"    value="Move Up Lecture"></property>
-        <property name="MOVE_DOWN_LECTURE_TOOLTIP"  value="Move Down Lecture"></property>
-        <property name="ADD_HW_TOOLTIP"             value="Add Assignment"></property>
-        <property name="REMOVE_HW_TOOLTIP"          value="Remove Assignment"></property>
+        <property name="REMOVE_TOOLTIP"   			value="Remove Player"></property>		
+        <property name="ADD_FANTASY_TOOLTIP"     	value="Add Fantasy Team"></property>
+        <property name="REMOVE_FANTASY_TOOLTIP"   	value="Remove Fantasy Team"></property>
+		<property name="EDIT_FANTASY_TOOLTIP"   	value="Edit Fantasy Team"></property>
         
 		
 		<!-- DRAFT BUTTON FILES-->
@@ -60,6 +60,8 @@
 		<property name="DRAFT_SUMMARY_HEADING_LABEL"		value="Draft Summary"></property>
 		<property name="MLB_TEAMS_HEADING_LABEL"			value="MLB Teams"></property>
 		<property name="SEARCH_HEADING_LABEL"				value="Search: "></property>
+		<property name="FANTASY_COMBO_LABEL"				value="Select Fantasy Team"></property>
+		<property name="DRAFT_NAME_LABEL"					value="Draft Name: "></property>
 		
 		<!-- RADIO LABELS -->
 		<property name="ALL_LABEL"						value="All"></property>

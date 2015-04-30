@@ -23,8 +23,7 @@ public enum WDK_PropertyType {
         EXIT_ICON,
         ADD_ICON,
         MINUS_ICON,
-        MOVE_UP_ICON,
-        MOVE_DOWN_ICON,
+        EDIT_ICON,
         
         // APPLICATION TOOLTIPS FOR BUTTONS
         NEW_DRAFT_TOOLTIP,
@@ -36,12 +35,11 @@ public enum WDK_PropertyType {
         EXIT_TOOLTIP,
         ADD_ITEM_TOOLTIP,
         REMOVE_ITEM_TOOLTIP,
-        ADD_LECTURE_TOOLTIP,
-        REMOVE_LECTURE_TOOLTIP,
-        MOVE_UP_LECTURE_TOOLTIP,
-        MOVE_DOWN_LECTURE_TOOLTIP,
-        ADD_HW_TOOLTIP,
-        REMOVE_HW_TOOLTIP,        
+        ADD_TOOLTIP,
+        REMOVE_TOOLTIP,
+        ADD_FANTASY_TOOLTIP,
+        REMOVE_FANTASY_TOOLTIP,
+        EDIT_FANTASY_TOOLTIP,
 
         // FOR THE BOTTOM DRAFT BUTTOMS
         PLAYER_HOME_ICON,
@@ -64,6 +62,8 @@ public enum WDK_PropertyType {
         DRAFT_SUMMARY_HEADING_LABEL,
         MLB_TEAMS_HEADING_LABEL,
         SEARCH_HEADING_LABEL,
+        FANTASY_COMBO_LABEL,
+        DRAFT_NAME_LABEL,
         
         //RADIO BUTTONS LABEL
         ALL_LABEL,

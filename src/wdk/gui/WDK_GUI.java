@@ -16,6 +16,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -32,6 +33,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -44,6 +46,7 @@ import properties_manager.PropertiesManager;
 import wdk.data.Hitter;
 import wdk.data.Pitcher;
 import wdk.data.Player;
+import static wolfieballdraftkit.WDK_PropertyType.*;
 
 /**
  *
@@ -90,7 +93,7 @@ public class WDK_GUI {
     // WORKSPACES
     SplitPane topWorkspaceSplitPane;
     VBox fantasyTeamWorkspacePane;
-    Label courseHeadingLabel;
+    Label fantasyTeamHeadingLabel;
     
     //FOR THE PLAYER HOME WORKSPACE
     SplitPane availPlayersSplitPane;
@@ -109,9 +112,10 @@ public class WDK_GUI {
     TableView<Player> allPlayerTable;
     
     ObservableList<Hitter> tempHitterList;
-    ObservableList<Pitcher> pitcherList;
+    ObservableList<Pitcher> pitcherList = FXCollections.observableArrayList();
     ObservableList<Player> playerList;
     ObservableList<Hitter> allHitterList;
+    ObservableList<String> fantasyTeamList = FXCollections.observableArrayList();
     
     //THE TABLE COLUMNS
     TableColumn firstColumn;    TableColumn lastColumn;         TableColumn proTeamColumn;
@@ -147,6 +151,14 @@ public class WDK_GUI {
     static final String COL_SBPERA = "SB/ERA";
     static final String COL_BAPWHIP = "BA/WHIP";
     
+    //FANTSY TEMA PANE
+    Label draftNameLabel;
+    TextField draftNameTextField;
+    Button draftAddButtion;
+    Button draftRemoveButtion;
+    Button draftEditButtion;
+    Label fantasyTeamLabel;
+    ComboBox fantasyTeamComboBox;
     
     SplitPane fantasyStandingSplitPane;
     VBox fantasyStandingWorkspacePane;        
@@ -200,6 +212,7 @@ public class WDK_GUI {
         initPitcherTable();
         initFantasyTeamsWorkspace();
         initAvailablePlayersWorkspace();
+        //initFantasyStandingWorkspace();
         initEventHandlers();}
     
      private void initWindow(String windowTitle) {
@@ -270,7 +283,6 @@ public class WDK_GUI {
         toolbar.getChildren().add(button);
         return button;
     }
-    
     private Label initLabel(WDK_PropertyType labelProperty, String styleClass) {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String labelText = props.getProperty(labelProperty);
@@ -304,10 +316,24 @@ public class WDK_GUI {
     
     private void initFantasyTeamsWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
-        topWorkspaceSplitPane = new SplitPane();
         fantasyTeamWorkspacePane = new VBox();
+        HBox dummyPane = new HBox();
+        HBox textPane = new HBox();
+
+        fantasyTeamHeadingLabel = initChildLabel(fantasyTeamWorkspacePane, FANTASY_TEAM_HEADING_LABEL, "");
+        draftNameLabel = initChildLabel(textPane, DRAFT_NAME_LABEL, "");
+        draftNameTextField = initGridTextField(textPane, 20, "", true);
+        draftAddButtion = initChildButton(dummyPane, WDK_PropertyType.ADD_ICON, WDK_PropertyType.ADD_FANTASY_TOOLTIP, false);
+        draftRemoveButtion = initChildButton(dummyPane, WDK_PropertyType.MINUS_ICON, WDK_PropertyType.REMOVE_FANTASY_TOOLTIP, false);
+        draftEditButtion = initChildButton(dummyPane, WDK_PropertyType.EDIT_ICON, WDK_PropertyType.EDIT_FANTASY_TOOLTIP, false);
+        fantasyTeamLabel = initChildLabel(dummyPane, FANTASY_COMBO_LABEL, "");
+        fantasyTeamComboBox = new ComboBox(fantasyTeamList);
         
-        courseHeadingLabel = initChildLabel(fantasyTeamWorkspacePane, WDK_PropertyType.FANTASY_TEAM_HEADING_LABEL, CLASS_HEADING_LABEL);
+        fantasyTeamWorkspacePane.getChildren().add(textPane);
+        fantasyTeamWorkspacePane.getChildren().add(dummyPane);
+        dummyPane.getChildren().add(fantasyTeamComboBox);
+        
+        
     }
     
     private void initAvailablePlayersWorkspace() {
@@ -317,8 +343,8 @@ public class WDK_GUI {
         availPlayersHeadingLabel = initChildLabel(availPlayersWorkspacePane, WDK_PropertyType.AVAILABLE_PLAYERS_HEADING_LABEL, CLASS_HEADING_LABEL);
         
         HBox bar = new HBox();
-        addButton = initChildButton(bar, WDK_PropertyType.ADD_ICON, WDK_PropertyType.ADD_LECTURE_TOOLTIP, false);
-        removeButton = initChildButton(bar, WDK_PropertyType.MINUS_ICON, WDK_PropertyType.REMOVE_LECTURE_TOOLTIP, false);
+        addButton = initChildButton(bar, WDK_PropertyType.ADD_ICON, WDK_PropertyType.ADD_TOOLTIP, false);
+        removeButton = initChildButton(bar, WDK_PropertyType.MINUS_ICON, WDK_PropertyType.REMOVE_TOOLTIP, false);
         availPlayersHeadingLabel = initChildLabel(bar, WDK_PropertyType.SEARCH_HEADING_LABEL, CLASS_HEADING_LABEL);
         searchBar = initGridTextField(bar, 20, "", true);
         
@@ -401,8 +427,7 @@ public class WDK_GUI {
         notesPitchColumn.setCellValueFactory(new PropertyValueFactory<>("notes"));
         notesPitchColumn.setCellFactory(TextFieldTableCell.<String>forTableColumn());
        
-        pitcherList = FXCollections.observableArrayList();
-                    
+        
             for (int i = 0; i < pitchersList.size(); i++) {
                 String fName = pitchersList.getJsonObject(i).getString("FIRST_NAME");
                 String lName = pitchersList.getJsonObject(i).getString("LAST_NAME");
@@ -422,7 +447,6 @@ public class WDK_GUI {
                 pitcherList.add(b);
             }
             
-       
         pitcherTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
                 birthyearColumn, winsColumn, savesColumn, strikeoutsColumn, earnedRunsAvgColumn,
                     whipColumn, estimValueColumn, notesPitchColumn);
@@ -611,10 +635,15 @@ public class WDK_GUI {
         //hitterTable.setItems(tempHitterList);
     }
     
-    public void replaceTables(TableView table){
+    public void replaceTables(String table){
         int x = availPlayersWorkspacePane.getChildren().size();
         availPlayersWorkspacePane.getChildren().remove(x-1);
-        availPlayersWorkspacePane.getChildren().add(table);
+        if(table.equals("allPlayerTable"))
+            availPlayersWorkspacePane.getChildren().add(allPlayerTable);
+        if(table.equals("hitterTable"))
+            availPlayersWorkspacePane.getChildren().add(hitterTable);
+        if(table.equals("pitcherTable"))
+            availPlayersWorkspacePane.getChildren().add(pitcherTable);
 }
     
     private void autoSearchTable(String search){
@@ -629,12 +658,13 @@ public class WDK_GUI {
             }
         } else if(pitcherButton.isSelected()){            
             ObservableList<Pitcher> dummy = FXCollections.observableArrayList();
-        
+            
             for (int i = 0; i < pitcherList.size(); i++) {
-                if(compareStrBeg(pitcherList.get(i).getFirstName(), search) || compareStrBeg(pitcherList.get(i).getLastName(), search)){
+                if((compareStrBeg(pitcherList.get(i).getFirstName(), search) || compareStrBeg(pitcherList.get(i).getLastName(), search))){
                     dummy.add(pitcherList.get(i));
+                     //pitcherTable.getItems().remove(i);
                 }
-                pitcherTable.setItems(dummy);                
+               pitcherTable.setItems(dummy);    
             }
         } else {
             ObservableList<Hitter> dummy = FXCollections.observableArrayList();
@@ -678,6 +708,21 @@ public class WDK_GUI {
             initMLBTeamsWorkspace();
         });
         
+        draftAddButtion.setOnAction(e -> {
+            AddFantasyTeamDialog a = new AddFantasyTeamDialog(primaryStage, this, "Add Fantasy Team");
+            a.showDialog();
+        });
+        draftRemoveButtion.setOnAction(e -> {
+            try{
+                fantasyTeamList.remove(fantasyTeamComboBox.getSelectionModel().getSelectedItem().toString());
+            }catch(Exception x){
+            }
+        });
+        draftEditButtion.setOnAction(e -> {
+            AddFantasyTeamDialog a = new AddFantasyTeamDialog(primaryStage, this, "Edit Fantasy Team");
+            a.showDialog();
+        });
+          
         addButton.setOnAction(e -> {
             try {
                 AddPlayerDialog a = new AddPlayerDialog(primaryStage, this);
@@ -688,56 +733,56 @@ public class WDK_GUI {
         });
         
         allButton.setOnAction(e -> {
-            replaceTables(allPlayerTable); 
+            replaceTables("allPlayerTable"); 
             autoSearchTable(searchBar.getText());
         });
         firstBButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"1B"});
             autoSearchTable(searchBar.getText());
         });
         secBButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"2B"});
             autoSearchTable(searchBar.getText());
         });
         thirdBButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"3B"});
             autoSearchTable(searchBar.getText());
         });
         catcherButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"C"});
             autoSearchTable(searchBar.getText());
         });
         cornInButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"1B", "3B"});
             autoSearchTable(searchBar.getText());
         });
         midInButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"2B", "SS"});
             autoSearchTable(searchBar.getText());
         });
         shortStopButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"SS"});
             autoSearchTable(searchBar.getText());
         });
         outfielderButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"OF"});
             autoSearchTable(searchBar.getText());
         });
         utilityButton.setOnAction(e -> {
-            replaceTables(hitterTable);
+            replaceTables("hitterTable");
             fillTable(new String[] {"1B", "2B", "3B", "SS", "OF", "C"});
             autoSearchTable(searchBar.getText());
         });
         pitcherButton.setOnAction(e -> {
-            replaceTables(pitcherTable);
+            replaceTables("pitcherTable");
             autoSearchTable(searchBar.getText());
         });
         searchBar.setOnKeyReleased(e -> {
@@ -747,14 +792,24 @@ public class WDK_GUI {
         allPlayerTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 Player b = allPlayerTable.getSelectionModel().getSelectedItem();
-                EditPlayerDialog x = new EditPlayerDialog(primaryStage, b);
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, b, this);
                 x.showEditPlayerDialog();
             }
         });
         pitcherTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
-                EditPlayerDialog x = new EditPlayerDialog(primaryStage, pitcherTable.getSelectionModel().getSelectedItem());
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, pitcherTable.getSelectionModel().getSelectedItem(), this);
                 x.showEditPlayerDialog();
+            }
+        });
+        removeButton.setOnAction(e -> {
+            if(allButton.isSelected()){
+                playerList.remove(allPlayerTable.getSelectionModel().getSelectedIndex());
+                //System.out.println(allPlayerTable.getSelectionModel().getSelectedItem().getFirstName() + playerList.size());
+            }
+            if(pitcherButton.isSelected()){
+                pitcherList.remove(pitcherTable.getSelectionModel().getSelectedIndex());
+
             }
         });
         
