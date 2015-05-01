@@ -64,6 +64,8 @@ public enum WDK_PropertyType {
         SEARCH_HEADING_LABEL,
         FANTASY_COMBO_LABEL,
         DRAFT_NAME_LABEL,
+        STARTING_LINEUP_LABEL,
+        TAXI_SQUAD_LABEL,
         
         //RADIO BUTTONS LABEL
         ALL_LABEL,

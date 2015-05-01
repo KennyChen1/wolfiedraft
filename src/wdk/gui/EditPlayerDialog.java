@@ -1,8 +1,6 @@
 package wdk.gui;
 
 import java.io.File;
-import wolfieballdraftkit.WDK_PropertyType;
-import static wdk.gui.WDK_GUI.CLASS_HEADING_LABEL;
 /*import static wdk.gui.WDK_GUI.CLASS_PROMPT_LABEL;
 import static wdk.gui.WDK_GUI.PRIMARY_STYLE_SHEET;*/
 import javafx.event.ActionEvent;
@@ -18,8 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import properties_manager.PropertiesManager;
-import wdk.data.Pitcher;
 import wdk.data.Player;
 import static wolfieballdraftkit.WDK_StartupConstants.*;
 
@@ -63,7 +59,7 @@ public class EditPlayerDialog extends Stage {
      * @param primaryStage The owner of this modal dialog.
      * @param player
      */
-    public EditPlayerDialog(Stage primaryStage, Player player,WDK_GUI gui) {       
+    public EditPlayerDialog(Stage primaryStage, Player player, WDK_GUI gui) {       
         // MAKE THIS DIALOG MODAL, MEANING OTHERS WILL WAIT
         // FOR IT WHEN IT IS DISPLAYED
         initModality(Modality.WINDOW_MODAL);
@@ -99,7 +95,9 @@ public class EditPlayerDialog extends Stage {
         contractComboLabel = new Label("Contract: ");
         salaryComboLabel = new Label("Salary: ");
         
-        fantasyTeamComboBox = new ComboBox(gui.fantasyTeamList);
+        fantasyTeamComboBox = new ComboBox();
+        fantasyTeamComboBox.getItems().add("");
+        fantasyTeamComboBox.getItems().addAll(gui.fantasyTeamList);
         positionComboBox = new ComboBox();
         positionComboBox.getItems().addAll(player.getPosition().split("_"));
         positionComboBox.setValue(player.getPosition().split("_")[0]);
@@ -126,6 +124,25 @@ public class EditPlayerDialog extends Stage {
         completeButton.setOnAction(completeCancelHandler);
         cancelButton.setOnAction(completeCancelHandler);
       
+        completeButton.setOnAction(e -> {
+            try{
+                Player x = gui.allPlayerTable.getSelectionModel().getSelectedItem();
+                x.setContract(contractComboBox.getValue().toString());
+                x.setTeamPosition(positionComboBox.getValue().toString());
+                x.setSalary(Integer.parseInt(salaryTextBox.getText()));
+                gui.draftTeams.get(gui.searchTeamName(fantasyTeamComboBox.getValue().toString())).getStartingLineup().add(x);
+                gui.doDeletePlayer();
+                this.close();
+            } catch(Exception x){
+                System.out.println(x.getMessage());
+            }
+            
+            /*
+            System.out.println(x.getContract());
+            gui.playerList.get(gui.searchByName(x.getFirstName(), gui.playerList, x.getLastName()));
+            System.out.println(gui.playerList.get(gui.searchByName(x.getFirstName(), gui.playerList, x.getLastName())).getContract());*/
+        });
+        
         // NOW LET'S ARRANGE THEM ALL AT ONCE
         gridPane.add(headingLabel, 0, 0, 1, 1);
         gridPane.add(playerImg, 0, 1, 1, 3);

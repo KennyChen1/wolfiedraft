@@ -33,16 +33,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
 import properties_manager.PropertiesManager;
+import wdk.data.FantasyTeam;
 import wdk.data.Hitter;
 import wdk.data.Pitcher;
 import wdk.data.Player;
@@ -110,12 +108,18 @@ public class WDK_GUI {
     TableView<Pitcher> pitcherTable;
     TableView<Hitter> hitterTable;
     TableView<Player> allPlayerTable;
+    TableView<Player> startingLineupTable;
+    TableView<Player> taxiPlayersTable;
     
     ObservableList<Hitter> tempHitterList;
-    ObservableList<Pitcher> pitcherList = FXCollections.observableArrayList();
+    ObservableList<Pitcher> pitcherList;
     ObservableList<Player> playerList;
     ObservableList<Hitter> allHitterList;
-    ObservableList<String> fantasyTeamList = FXCollections.observableArrayList();
+    ObservableList<String> fantasyTeamList;
+    ObservableList<Hitter> dummyPitcherList;
+    ObservableList<FantasyTeam> draftTeams;
+    ObservableList<Player> startingLineup;
+    ObservableList<Player> taxiPlayers;
     
     //THE TABLE COLUMNS
     TableColumn firstColumn;    TableColumn lastColumn;         TableColumn proTeamColumn;
@@ -127,6 +131,13 @@ public class WDK_GUI {
     TableColumn battingAverageColumn;                           TableColumn runsPerWinsColumn;
     TableColumn homePerSaveColumn;                              TableColumn runsBattedInPerOutColumn;
     TableColumn stealsPerERAColumn;                             TableColumn avgPerWhipColumn;
+    
+    TableColumn teamPositionColumnF; 
+    TableColumn firstColumnF;    TableColumn lastColumnF;         TableColumn proTeamColumnF;
+    TableColumn positionColumnF; TableColumn runsPerWinsColumnF;  TableColumn homePerSaveColumnF;       
+    TableColumn runsBattedInPerOutColumnF;   TableColumn stealsPerERAColumnF; 
+    TableColumn avgPerWhipColumnF;      TableColumn estimValueColumnF;
+    TableColumn contractColumnF;        TableColumn salaryColumnF;
     
     // AND TABLE COLUMNS
     static final String COL_FIRST = "First";
@@ -151,8 +162,10 @@ public class WDK_GUI {
     static final String COL_SBPERA = "SB/ERA";
     static final String COL_BAPWHIP = "BA/WHIP";
     
-    //FANTSY TEMA PANE
+    //FANTASY TEAM PANE
     Label draftNameLabel;
+    Label startingLineupLabel;
+    Label taxiPlayerLabel;
     TextField draftNameTextField;
     Button draftAddButtion;
     Button draftRemoveButtion;
@@ -202,8 +215,13 @@ public class WDK_GUI {
     }
     
      public void initGUI(String windowTitle) throws IOException {
-
         // AND FINALLY START UP THE WINDOW (WITHOUT THE WORKSPACE)
+         
+        pitcherList = FXCollections.observableArrayList();
+        fantasyTeamList = FXCollections.observableArrayList();
+        draftTeams = FXCollections.observableArrayList();
+        startingLineup = FXCollections.observableArrayList();
+         
         initFileToolbar();
         initBottomToolbar();
         initWindow(windowTitle);
@@ -212,7 +230,7 @@ public class WDK_GUI {
         initPitcherTable();
         initFantasyTeamsWorkspace();
         initAvailablePlayersWorkspace();
-        //initFantasyStandingWorkspace();
+        initFantasyStandingWorkspace();
         initEventHandlers();}
     
      private void initWindow(String windowTitle) {
@@ -333,6 +351,56 @@ public class WDK_GUI {
         fantasyTeamWorkspacePane.getChildren().add(dummyPane);
         dummyPane.getChildren().add(fantasyTeamComboBox);
         
+        VBox startPane = new VBox();
+        VBox taxiPane = new VBox();
+        startingLineupTable = new TableView();
+        //startingLineupTabl
+        taxiPlayersTable = new TableView();
+        startingLineupLabel = initChildLabel(startPane, STARTING_LINEUP_LABEL, "");
+        taxiPlayerLabel = initChildLabel(taxiPane, TAXI_SQUAD_LABEL, "");
+        
+        startPane.getChildren().add(startingLineupTable);
+        fantasyTeamWorkspacePane.getChildren().add(startPane);
+        taxiPane.getChildren().add(taxiPlayersTable);
+        fantasyTeamWorkspacePane.getChildren().add(taxiPane);
+        
+        teamPositionColumnF = new TableColumn("Position");    
+        firstColumnF = new TableColumn(COL_FIRST);    
+        lastColumnF = new TableColumn(COL_LAST);
+        proTeamColumnF = new TableColumn(COL_PROTEAM);
+        positionColumnF = new TableColumn(COL_POS);
+        runsPerWinsColumnF = new TableColumn(COL_RPW);
+        homePerSaveColumnF = new TableColumn(COL_HRPSV);
+        runsBattedInPerOutColumnF = new TableColumn(COL_RBIPK);
+        stealsPerERAColumnF = new TableColumn(COL_SBPERA);
+        avgPerWhipColumnF = new TableColumn(COL_BAPWHIP);
+        estimValueColumnF = new TableColumn(COL_VALUE);        
+        contractColumnF = new TableColumn("Contract");        
+        salaryColumnF = new TableColumn("Salary");        
+
+        teamPositionColumnF.setCellValueFactory(new PropertyValueFactory<>("teamPosition"));
+        firstColumnF.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        lastColumnF.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        proTeamColumnF.setCellValueFactory(new PropertyValueFactory<>("team"));
+        positionColumnF.setCellValueFactory(new PropertyValueFactory<>("position"));
+        
+        runsPerWinsColumnF.setCellValueFactory(new PropertyValueFactory<>("RW"));
+        homePerSaveColumnF.setCellValueFactory(new PropertyValueFactory<>("HRSV"));
+        runsBattedInPerOutColumnF.setCellValueFactory(new PropertyValueFactory<>("RBIK"));
+        stealsPerERAColumnF.setCellValueFactory(new PropertyValueFactory<>("SBERA"));
+        avgPerWhipColumnF.setCellValueFactory(new PropertyValueFactory<>("BAWHIP"));
+        estimValueColumnF.setCellValueFactory(new PropertyValueFactory<>("eta"));
+        contractColumnF.setCellValueFactory(new PropertyValueFactory<>("contract"));
+        salaryColumnF.setCellValueFactory(new PropertyValueFactory<>("salary"));
+        
+        /*taxiPlayersTable.getColumns().addAll(firstColumnF, lastColumnF, proTeamColumnF, positionColumnF, 
+                runsPerWinsColumnF, homePerSaveColumnF, runsBattedInPerOutColumnF, 
+                    stealsPerERAColumnF, avgPerWhipColumnF, estimValueColumnF);*/
+        startingLineupTable.getColumns().addAll(teamPositionColumnF, firstColumnF, lastColumnF, 
+                proTeamColumnF, positionColumnF, runsPerWinsColumnF, homePerSaveColumnF, 
+                runsBattedInPerOutColumnF, stealsPerERAColumnF, avgPerWhipColumnF, 
+                    estimValueColumnF, contractColumnF, salaryColumnF);
+        
         
     }
     
@@ -359,8 +427,8 @@ public class WDK_GUI {
         midInButton = initRadioButton(radioButtonRow, WDK_PropertyType.MID_INFIELD_LABEL, group);
         shortStopButton = initRadioButton(radioButtonRow, WDK_PropertyType.SHORTSTOP_LABEL, group);
         outfielderButton = initRadioButton(radioButtonRow, WDK_PropertyType.OUTFIELDER_LABEL, group);
-        utilityButton= initRadioButton(radioButtonRow, WDK_PropertyType.UTILITY_LABEL, group);
-        pitcherButton= initRadioButton(radioButtonRow, WDK_PropertyType.PITCHER_LABEL, group);
+        utilityButton = initRadioButton(radioButtonRow, WDK_PropertyType.UTILITY_LABEL, group);
+        pitcherButton = initRadioButton(radioButtonRow, WDK_PropertyType.PITCHER_LABEL, group);
  
         
         
@@ -375,7 +443,6 @@ public class WDK_GUI {
         fantasyStandingSplitPane = new SplitPane();
         fantasyStandingWorkspacePane = new VBox();        
         fantasyStandingHeadingLabel = initChildLabel(fantasyStandingWorkspacePane, WDK_PropertyType.FANTASY_STANDING_HEADING_LABEL, CLASS_HEADING_LABEL);
-        wdkPane.setCenter(fantasyStandingWorkspacePane);
     }
     private void initDraftWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
@@ -612,6 +679,25 @@ public class WDK_GUI {
                     stealsPerERAColumn, avgPerWhipColumn, estimValueColumn, notesAllColumn);
      }
     
+    private String[] getTableSelection(){
+        String[] selections = {""};
+        if(firstBButton.isSelected())
+            selections = new String[]{"1B"};
+        if(secBButton.isSelected())
+            selections = new String[]{"2B"};
+        if(thirdBButton.isSelected())
+            selections = new String[]{"3B"};
+        if(cornInButton.isSelected())
+            selections = new String[]{"1B", "3B"};
+        if(midInButton.isSelected())
+            selections = new String[]{"2B", "SS"};
+        if(shortStopButton.isSelected())
+            selections = new String[]{"SS"};
+        if(outfielderButton.isSelected())
+            selections = new String[]{"OF"};
+        
+        return selections;
+    }
     private void fillTable(String[] sel){
             
             tempHitterList = FXCollections.observableArrayList();            
@@ -646,6 +732,12 @@ public class WDK_GUI {
             availPlayersWorkspacePane.getChildren().add(pitcherTable);
 }
     
+    private void fillSelectedHitterTable(){
+        replaceTables("hitterTable");
+        fillTable(getTableSelection());
+        autoSearchTable(searchBar.getText());
+    }
+    
     private void autoSearchTable(String search){
         if(allButton.isSelected()){
             ObservableList<Player> dummy = FXCollections.observableArrayList();
@@ -662,7 +754,6 @@ public class WDK_GUI {
             for (int i = 0; i < pitcherList.size(); i++) {
                 if((compareStrBeg(pitcherList.get(i).getFirstName(), search) || compareStrBeg(pitcherList.get(i).getLastName(), search))){
                     dummy.add(pitcherList.get(i));
-                     //pitcherTable.getItems().remove(i);
                 }
                pitcherTable.setItems(dummy);    
             }
@@ -671,12 +762,22 @@ public class WDK_GUI {
         
             for (int i = 0; i < tempHitterList.size(); i++) {
                 //System.out.println(tempHitterList.size());
-                if(compareStrBeg(tempHitterList.get(i).getFirstName(), search) || compareStrBeg(allHitterList.get(i).getLastName(), search)){
+                if(compareStrBeg(tempHitterList.get(i).getFirstName(), search) || compareStrBeg(tempHitterList.get(i).getLastName(), search)){
                     dummy.add(tempHitterList.get(i));
                 }
-                hitterTable.setItems(dummy);                
+                hitterTable.setItems(dummy);    
+                //fillTable(getTableSelection());
             }
         }
+    }
+    
+    public int searchTeamName(String search){
+        int x = -1;
+        for(int i = 0; i < draftTeams.size(); i++){
+            if(draftTeams.get(i).getFantasyTeamName().equals(search))
+                return i;
+        }
+        return x;
     }
     
     private boolean compareStrBeg(String name, String search){
@@ -684,6 +785,53 @@ public class WDK_GUI {
             return name.substring(0, search.length()).equalsIgnoreCase(search);
         else
             return false;
+    }
+    
+    public int searchByName(ObservableList<Pitcher> list, String fName, String lName){
+        int pos = -1;        
+        for(int i = 0; i < list.size(); i++){
+            if(list.get(i).getFirstName().equals(fName) && list.get(i).getLastName().equals(lName)){
+                return i;             
+            }
+        }
+        return pos;
+    }
+    public int searchByName(String fName, String lName, ObservableList<Hitter> list){
+        int pos = -1;        
+        for(int i = 0; i < list.size(); i++)
+            if(list.get(i).getFirstName().equals(fName) && list.get(i).getLastName().equals(lName))
+                   return i;                         
+        return pos;
+    }
+    public int searchByName(String fName, ObservableList<Player> list, String lName){
+        int pos = -1;        
+        for(int i = 0; i < list.size(); i++)
+            if(list.get(i).getFirstName().equals(fName) && list.get(i).getLastName().equals(lName))
+                   return i;                         
+        return pos;
+    }
+    
+    public void doDeletePlayer(){           
+            if(allButton.isSelected()){  
+                Player x = allPlayerTable.getSelectionModel().getSelectedItem();
+                int y = searchByName(x.getFirstName(), playerList, x.getLastName());
+                playerList.remove(y);
+                autoSearchTable(searchBar.getText());
+
+                int z = searchByName(pitcherList, x.getFirstName(), x.getLastName());
+                if(x.getPosition().contains("P"))
+                    pitcherList.remove(z);
+                allHitterList.remove(searchByName(x.getFirstName(), x.getLastName(), allHitterList));
+
+                //System.out.println(allPlayerTable.getSelectionModel().getSelectedItem().getFirstName() + playerList.size());
+            } else if(pitcherButton.isSelected()){                
+                pitcherList.remove(searchByName(pitcherList, pitcherTable.getSelectionModel().getSelectedItem().getFirstName(), pitcherTable.getSelectionModel().getSelectedItem().getLastName()));
+                autoSearchTable(searchBar.getText());             
+            } else{
+                allHitterList.remove(searchByName(hitterTable.getSelectionModel().getSelectedItem().getFirstName(), hitterTable.getSelectionModel().getSelectedItem().getLastName(), allHitterList));
+                fillTable(getTableSelection());
+                autoSearchTable(searchBar.getText());
+            }
     }
     
     private void initEventHandlers() throws IOException {
@@ -732,54 +880,41 @@ public class WDK_GUI {
             }
         });
         
+        fantasyTeamComboBox.setOnAction(e ->{            
+            int x = searchTeamName(fantasyTeamComboBox.getValue().toString());
+            startingLineupTable.setItems(draftTeams.get(x).getStartingLineup());
+        });
+        
         allButton.setOnAction(e -> {
             replaceTables("allPlayerTable"); 
             autoSearchTable(searchBar.getText());
         });
         firstBButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"1B"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         secBButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"2B"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         thirdBButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"3B"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         catcherButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"C"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         cornInButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"1B", "3B"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         midInButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"2B", "SS"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         shortStopButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"SS"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         outfielderButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"OF"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         utilityButton.setOnAction(e -> {
-            replaceTables("hitterTable");
-            fillTable(new String[] {"1B", "2B", "3B", "SS", "OF", "C"});
-            autoSearchTable(searchBar.getText());
+            fillSelectedHitterTable();
         });
         pitcherButton.setOnAction(e -> {
             replaceTables("pitcherTable");
@@ -796,6 +931,12 @@ public class WDK_GUI {
                 x.showEditPlayerDialog();
             }
         });
+        hitterTable.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, hitterTable.getSelectionModel().getSelectedItem(), this);
+                x.showEditPlayerDialog();
+            }
+        });
         pitcherTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 EditPlayerDialog x = new EditPlayerDialog(primaryStage, pitcherTable.getSelectionModel().getSelectedItem(), this);
@@ -803,14 +944,7 @@ public class WDK_GUI {
             }
         });
         removeButton.setOnAction(e -> {
-            if(allButton.isSelected()){
-                playerList.remove(allPlayerTable.getSelectionModel().getSelectedIndex());
-                //System.out.println(allPlayerTable.getSelectionModel().getSelectedItem().getFirstName() + playerList.size());
-            }
-            if(pitcherButton.isSelected()){
-                pitcherList.remove(pitcherTable.getSelectionModel().getSelectedIndex());
-
-            }
+            doDeletePlayer();
         });
         
         

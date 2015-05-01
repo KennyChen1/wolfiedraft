@@ -104,7 +104,16 @@ public class FileController {
         jsonReader.close();
         is.close();
         return json;
-    }   
+    }
+    
+    /*
+    private void saveJSONFile(String jsonFilePath) throws IOException {
+        InputStream is = new FileInputStream(jsonFilePath);
+        JsonReader jsonReader = Json.createReader(is);
+        JsonObject json = jsonReader.readObject();
+        jsonReader.close();
+        is.close();
+    }
    /**
      * This method marks the appropriate variable such that we know
      * that the current Course has been edited since it's been saved.

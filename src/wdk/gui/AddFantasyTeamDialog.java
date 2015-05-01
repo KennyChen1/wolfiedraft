@@ -19,6 +19,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import properties_manager.PropertiesManager;
+import wdk.data.FantasyTeam;
 import wdk.data.Pitcher;
 import wdk.data.Player;
 import static wolfieballdraftkit.WDK_PropertyType.*;
@@ -107,11 +108,16 @@ public class AddFantasyTeamDialog extends Stage {
                 UnfilledDialog a = new UnfilledDialog(primaryStage);
                 a.showDialog();
             } else if(title.equals("Add Fantasy Team")){
-                gui.fantasyTeamList.add(fantasyNameTextField.getText());
+                if(gui.searchTeamName(fantasyNameTextField.getText()) == -1){// MAKE ERROR DIALOG FOR NON UNIQUE NAME
+                    gui.fantasyTeamList.add(fantasyNameTextField.getText());
+                    gui.draftTeams.add(new FantasyTeam(fantasyNameTextField.getText()));
+                    
+                }
                 this.close();
             } else if(title.equals("Edit Fantasy Team")){                
                 int x = gui.fantasyTeamList.indexOf(gui.fantasyTeamComboBox.getSelectionModel().getSelectedItem());
-                gui.fantasyTeamList.set(x, fantasyNameTextField.getText());
+                gui.fantasyTeamList.set(x, fantasyNameTextField.getText());                
+                gui.draftTeams.get(gui.searchTeamName(gui.fantasyTeamComboBox.getValue().toString())).setFantasyTeamName(fantasyNameTextField.getText());
                 gui.fantasyTeamComboBox.setValue(fantasyNameTextField.getText());
                 this.close();
             }} catch(Exception x){

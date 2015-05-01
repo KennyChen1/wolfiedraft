@@ -1,14 +1,5 @@
 package wdk.data;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 
 public class Player {
 
@@ -22,6 +13,9 @@ public class Player {
     String notes;
     String birthNation;
     String position;
+    String teamPosition;
+    String contract;
+    int salary;
     int RW;
     int HRSV;
     int RBIK;
@@ -159,6 +153,27 @@ public class Player {
 
     public void setBirthNation(String birthNation) {
         this.birthNation = birthNation;
+    }
+    
+    public String getTeamPosition() {
+        return teamPosition;
+    }
+    public void setTeamPosition(String teamPosition) {
+        this.teamPosition = teamPosition;
+    }
+    
+    public String getContract() {
+        return contract;
+    }
+    public void setContract(String contract) {
+        this.contract = contract;
+    }
+    
+    public int getSalary() {
+        return salary;
+    }
+    public void setSalary(int salary) {
+        this.salary = salary;
     }
 /*
     public LocalDate getStartingMonday() {

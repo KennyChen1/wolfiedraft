@@ -62,7 +62,9 @@
 		<property name="SEARCH_HEADING_LABEL"				value="Search: "></property>
 		<property name="FANTASY_COMBO_LABEL"				value="Select Fantasy Team"></property>
 		<property name="DRAFT_NAME_LABEL"					value="Draft Name: "></property>
-		
+		<property name="STARTING_LINEUP_LABEL"				value="Starting Lineup "></property>
+		<property name="TAXI_SQUAD_LABEL"					value="Taxi Squad "></property>
+
 		<!-- RADIO LABELS -->
 		<property name="ALL_LABEL"						value="All"></property>
 		<property name="FIRST_BASEMAN_LABEL"			value="1B"></property>
