@@ -15,15 +15,20 @@ public class Player {
     String position;
     String teamPosition;
     String contract;
+    String fantasyTeam;
     int salary;
+    int earnedRuns;
     int RW;
+    int ab;
+    int hits;
     int HRSV;
     int RBIK;
+    int walks;
     double SBERA;
     double BAWHIP;
+    double IP;
 
-    
-    public Player(String firstName, String lastName, String team, int birthYear,
+     public Player(String firstName, String lastName, String team, int birthYear,
            String notes, String birthNation) {
         
         this.firstName = firstName;        
@@ -33,7 +38,61 @@ public class Player {
         this.notes = notes;
         this.birthNation = birthNation;
     }
-
+    
+    public Player(String firstName, String lastName, String team, int birthYear,
+           String notes, String birthNation, double IP) {
+        
+        this.firstName = firstName;        
+        this.lastName = lastName;
+        this.team = team;
+        this.birthYear = birthYear;
+        this.notes = notes;
+        this.birthNation = birthNation;
+        this.IP = IP;
+    }
+    
+    public Player(String firstName, String lastName, String team, String position,
+            int birthYear, String notes, int RW, int HRSV, 
+                int RBIK, double SBERA, double BAWHIP, int ab, int walks) {
+        
+        this.firstName = firstName;        
+        this.lastName = lastName;
+        this.team = team;
+        this.position = position;
+        this.birthYear = birthYear;
+        this.notes = notes;
+        this.RW = RW;
+        this.HRSV = HRSV;
+        this.RBIK = RBIK;
+        this.SBERA = SBERA;
+        this.BAWHIP = BAWHIP;
+        this.ab = ab;
+        this.hits = hits;   
+        this.IP = IP;
+        this.walks = walks;
+    }
+    
+    public Player(String firstName, String lastName, String team, String position,
+            int birthYear, String notes, int RW, int HRSV, 
+                int RBIK, double SBERA, double BAWHIP, double IP, int walks, int earnedRuns, int hits) {
+        
+        this.firstName = firstName;        
+        this.lastName = lastName;
+        this.team = team;
+        this.position = position;
+        this.birthYear = birthYear;
+        this.notes = notes;
+        this.RW = RW;
+        this.HRSV = HRSV;
+        this.RBIK = RBIK;
+        this.SBERA = SBERA;
+        this.BAWHIP = BAWHIP;  
+        this.IP = IP;
+        this.walks = walks;
+        this.earnedRuns = earnedRuns;
+        this.hits = hits;
+    }
+    
     public Player(String firstName, String lastName, String team, String position,
             int birthYear, String notes, int RW, int HRSV, 
                 int RBIK, double SBERA, double BAWHIP) {
@@ -48,8 +107,7 @@ public class Player {
         this.HRSV = HRSV;
         this.RBIK = RBIK;
         this.SBERA = SBERA;
-        this.BAWHIP = BAWHIP;
-        
+        this.BAWHIP = BAWHIP;  
     }
     
     public Player(String firstName, String lastName, String team, String position){
@@ -68,7 +126,6 @@ public class Player {
     public String getFirstName() {
         return firstName;
     }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -175,151 +232,46 @@ public class Player {
     public void setSalary(int salary) {
         this.salary = salary;
     }
-/*
-    public LocalDate getStartingMonday() {
-        return startingMonday;
+    
+    public String getFantasyTeam() {
+        return fantasyTeam;
     }
-
-    public void setStartingMonday(LocalDate startingMonday) {
-        this.startingMonday = startingMonday;
-    }
-
-    public LocalDate getEndingFriday() {
-        return endingFriday;
-    }
-
-    public void setEndingFriday(LocalDate endingFriday) {
-        this.endingFriday = endingFriday;
-    }
-
-    public void setScheduleDates(LocalDate initStartingMonday, LocalDate initEndingFriday) {
-        setStartingMonday(initStartingMonday);
-        setEndingFriday(initEndingFriday);
-    }
-
-    public void addPage(CoursePage pageToAdd) {
-        pages.add(pageToAdd);
-    }
-
-    public List<CoursePage> getPages() {
-        return pages;
-    }
-
-    public void selectPage(CoursePage coursePage) {
-        if (!pages.contains(coursePage)) {
-            pages.add(coursePage);
-        }
-    }
-
-    public void unselectPage(CoursePage coursePage) {
-        if (pages.contains(coursePage)) {
-            pages.remove(coursePage);
-        }
-    }
-
-    public List<DayOfWeek> getLectureDays() {
-        return lectureDays;
-    }
-
-    // BELOW ARE ADDITIONAL METHODS FOR UPDATING A COURSE
-    public void selectLectureDay(DayOfWeek dayOfWeek) {
-        if (!lectureDays.contains(dayOfWeek)) {
-            lectureDays.add(dayOfWeek);
-        } else {
-            lectureDays.remove(dayOfWeek);
-        }
-    }
-
-    public void selectLectureDay(DayOfWeek dayOfWeek, boolean isSelected) {
-        if (isSelected) {
-            if (!lectureDays.contains(dayOfWeek)) {
-                lectureDays.add(dayOfWeek);
-            }
-        } else {
-            lectureDays.remove(dayOfWeek);
-        }
-    }
-
-    public void clearPages() {
-        pages.clear();
-    }
-
-    public void clearLectureDays() {
-        lectureDays.clear();
-    }
-
-    public void clearScheduleItems() {
-        scheduleItems.clear();
-    }
-
-    public void clearLectures() {
-        lectures.clear();
-    }
-
-    public void clearHWs() {
-        assignments.clear();
-    }
-
-    public void addLectureDay(DayOfWeek dayOfWeek) {
-        lectureDays.add(dayOfWeek);
-    }
-
-    public boolean hasLectureDay(DayOfWeek dayOfWeek) {
-        return lectureDays.contains(dayOfWeek);
-    }
-
-    public void addScheduleItem(ScheduleItem si) {
-        scheduleItems.add(si);
+    public void setFantasyTeam(String fantasyTeam) {
+        this.fantasyTeam = fantasyTeam;
     }
     
-    //SORTS THE SCHEDULE ITEMS TABLE
-    public void sortScheduleItem(){
-        Collections.sort(scheduleItems);
+    public int getAB() {
+        return ab;
     }
-
-    public ObservableList<ScheduleItem> getScheduleItems() {
-        return scheduleItems;
-    }
-
-    public void removeScheduleItem(ScheduleItem itemToRemove) {
-        scheduleItems.remove(itemToRemove);
-    }
-
-    public void addLecture(Lecture lol) {
-        lectures.add(lol);
-    }
-
-    public ObservableList<Lecture> getLectures() {
-        return lectures;
-    }
-
-    public void removeLecture(Lecture lectureToRemove) {
-        lectures.remove(lectureToRemove);
-    }
-
-    public void addAssignment(Assignment a) {
-        assignments.add(a);
+    public void setAB(int ab) {
+        this.ab = ab;
     }
     
-    //SORTS THE ASSIGNMENT TABLE - new
-    public void sortAssignment() {
-        Collections.sort(assignments);
+    public int getHits() {
+        return hits;
     }
-
-    public ObservableList<Assignment> getAssignments() {
-        return assignments;
+    public void setFantasyTeam(int hits) {
+        this.hits = hits;
     }
-
-    public void removeAssignment(Assignment assignmentToRemove) {
-        assignments.remove(assignmentToRemove);
+    
+    public double getIP() {
+        return IP;
     }
-
-    public HashMap<LocalDate, ScheduleItem> getScheduleItemMappings() {
-        // GET THE SCHEDULE ITEM DATES FOR QUICK LOOKUP
-        HashMap<LocalDate, ScheduleItem> holidayDates = new HashMap();
-        for (ScheduleItem scheduleItem : scheduleItems) {
-            holidayDates.put(scheduleItem.getDate(), scheduleItem);
-        }
-        return holidayDates;
-    }*/
+    public void setFirstName(double IP) {
+        this.IP = IP;
+    }
+    
+    public double getWalks() {
+        return walks;
+    }
+    public void setFirstName(int walks) {
+        this.walks = walks;
+    }
+    
+    public int getEarnedRuns(){   
+        return earnedRuns;
+    }
+    public void setEarnedRuns(int earnedRuns){
+        this.earnedRuns = earnedRuns;
+    }
 }

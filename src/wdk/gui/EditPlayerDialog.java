@@ -1,6 +1,8 @@
 package wdk.gui;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import javafx.collections.ObservableList;
 /*import static wdk.gui.WDK_GUI.CLASS_PROMPT_LABEL;
 import static wdk.gui.WDK_GUI.PRIMARY_STYLE_SHEET;*/
 import javafx.event.ActionEvent;
@@ -17,6 +19,9 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import wdk.data.Player;
+import wdk.data.Hitter;
+import wdk.data.Pitcher;
+import wdk.gui.UnfilledDialog;
 import static wolfieballdraftkit.WDK_StartupConstants.*;
 
 /**
@@ -58,8 +63,10 @@ public class EditPlayerDialog extends Stage {
      * 
      * @param primaryStage The owner of this modal dialog.
      * @param player
+     * @param gui
+     * @param availPlayer
      */
-    public EditPlayerDialog(Stage primaryStage, Player player, WDK_GUI gui) {       
+    public EditPlayerDialog(Stage primaryStage, Player player, WDK_GUI gui, boolean availPlayer) {       
         // MAKE THIS DIALOG MODAL, MEANING OTHERS WILL WAIT
         // FOR IT WHEN IT IS DISPLAYED
         initModality(Modality.WINDOW_MODAL);
@@ -125,22 +132,75 @@ public class EditPlayerDialog extends Stage {
         cancelButton.setOnAction(completeCancelHandler);
       
         completeButton.setOnAction(e -> {
-            try{
-                Player x = gui.allPlayerTable.getSelectionModel().getSelectedItem();
-                x.setContract(contractComboBox.getValue().toString());
-                x.setTeamPosition(positionComboBox.getValue().toString());
-                x.setSalary(Integer.parseInt(salaryTextBox.getText()));
-                gui.draftTeams.get(gui.searchTeamName(fantasyTeamComboBox.getValue().toString())).getStartingLineup().add(x);
-                gui.doDeletePlayer();
-                this.close();
-            } catch(Exception x){
-                System.out.println(x.getMessage());
+            try{Player x = null;
+                if(availPlayer){//from free agent to team        
+                    if(gui.allButton.isSelected())
+                        x = gui.allPlayerTable.getSelectionModel().getSelectedItem();
+                    else if(gui.pitcherButton.isSelected()){
+                        x = gui.pitcherToPlayer(gui.pitcherTable.getSelectionModel().getSelectedItem());
+                    } else{
+                        Hitter y = gui.hitterTable.getSelectionModel().getSelectedItem();                        
+                        double sb;
+                        if(y.getAB() == 0){
+                            sb = -1;
+                        } else{
+                            DecimalFormat df = new DecimalFormat("#.000"); 
+                            sb = Double.parseDouble(df.format(1.0*y.getHits()/y.getAB()));
+                        }
+                        x = new Player(y.getFirstName(), y.getLastName(), y.getTeam(), y.getPositions(), 
+                           y.getBirthYear(), y.getNotes(), y.getRuns(), y.getHomeRuns(), 
+                               y.getRunsBattedIn(), y.getStolenBases(), sb, y.getAB(), y.getHits());
+                    }
+
+                    x.setContract(contractComboBox.getValue().toString());
+                    x.setTeamPosition(positionComboBox.getValue().toString());
+                    x.setSalary(Integer.parseInt(salaryTextBox.getText()));
+                    x.setFantasyTeam(this.fantasyTeamComboBox.getValue().toString());
+                    gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getStartingLineup().add(x);
+                    gui.doDeletePlayer();
+                    
+            } else{
+                    x = gui.startingLineupTable.getSelectionModel().getSelectedItem();
+                       System.out.println(this.fantasyTeamComboBox.getValue());
+                    if(this.fantasyTeamComboBox.getValue() == null){//back to free agent
+                        gui.playerList.add(x);
+                        if(!x.getPosition().contains("P")){
+                            Hitter zz = new Hitter(x.getFirstName(), x.getLastName(), x.getTeam(), x.getBirthYear(),
+                               x.getNotes(), x.getBirthNation(), x.getPosition(), x.getAB(), x.getRW(), x.getHits(), 
+                                x.getHRSV(), x.getRBIK(), (int)(x.getSBERA()));
+                            gui.allHitterList.add(zz);
+                        } else{
+                            Pitcher xy = gui.playerToPitcher(x);
+                            gui.pitcherList.add(xy);
+                        }
+                        
+                        ObservableList<Player> a = gui.draftTeams.get(gui.searchTeamName(gui.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
+                        for(int i = 0; i < a.size(); i++){
+                            if(a.get(i).getFirstName().equals(x.getFirstName()) && a.get(i).getLastName().equals(x.getLastName()))
+                                a.remove(i);
+                        }
+                    } else{// moving between teams
+
+                        x.setContract(contractComboBox.getValue().toString());
+                        x.setTeamPosition(positionComboBox.getValue().toString());
+                        x.setSalary(Integer.parseInt(salaryTextBox.getText()));
+                        x.setFantasyTeam(fantasyTeamComboBox.getValue().toString());
+
+                        ObservableList<Player> a = gui.draftTeams.get(gui.searchTeamName(gui.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
+
+                        for(int i = 0; i < a.size(); i++){
+                            if(a.get(i).getFirstName().equals(x.getFirstName()) && a.get(i).getLastName().equals(x.getLastName()))
+                                a.remove(i);
+                        }
+                        ObservableList<Player> b = gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
+                        b.add(x);
+                    }
             }
-            
-            /*
-            System.out.println(x.getContract());
-            gui.playerList.get(gui.searchByName(x.getFirstName(), gui.playerList, x.getLastName()));
-            System.out.println(gui.playerList.get(gui.searchByName(x.getFirstName(), gui.playerList, x.getLastName())).getContract());*/
+                this.close();
+            } catch(NumberFormatException x){
+                UnfilledDialog xy = new UnfilledDialog(primaryStage);
+                xy.showAndWait();
+            }
         });
         
         // NOW LET'S ARRANGE THEM ALL AT ONCE

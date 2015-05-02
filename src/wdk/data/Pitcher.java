@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 
 public class Pitcher extends Player{
     
-    double IP;
     int earnedRuns;
     int wins;
     int saves;
@@ -17,9 +16,8 @@ public class Pitcher extends Player{
     public Pitcher(String firstName, String lastName, String team, int birthYear,
            String notes, String birthNation, double IP, int earnedRuns, int wins, int saves,
             int hits, int basesOnballs, int strikeOuts) {
-        super(firstName, lastName, team, birthYear, notes, birthNation);
+        super(firstName, lastName, team, birthYear, notes, birthNation, IP);
         
-        this.IP = IP;
         this.earnedRuns = earnedRuns;
         this.wins = wins;
         this.saves = saves;
@@ -41,12 +39,7 @@ public class Pitcher extends Player{
         super(firstName, lastName, team, position);
     }
     
-    public double getIP(){   
-        return IP;
-    }
-    public void setPositions(double IP){
-        this.IP = IP;
-    }
+    
         
     public double getERA(){   
         return ERA;

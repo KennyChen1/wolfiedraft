@@ -38,7 +38,7 @@ public class UnfilledDialog extends Stage {
     
     // CONSTANTS FOR OUR UI
     public static final String CLOSE = "Close";
-    public static final String MESSAGE_LABEL = "All of the info must be filled!";
+    public static final String MESSAGE_LABEL = "All of the info must be filled and valid!";
     
     /**
      * Initializes this dialog so that it can be used for either adding

@@ -378,24 +378,37 @@ public class WDK_GUI {
         contractColumnF = new TableColumn("Contract");        
         salaryColumnF = new TableColumn("Salary");        
 
+        teamPositionColumnF.setSortable(false);
         teamPositionColumnF.setCellValueFactory(new PropertyValueFactory<>("teamPosition"));
         firstColumnF.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        firstColumnF.setSortable(false);
         lastColumnF.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        lastColumnF.setSortable(false);
         proTeamColumnF.setCellValueFactory(new PropertyValueFactory<>("team"));
+        proTeamColumnF.setSortable(false);
         positionColumnF.setCellValueFactory(new PropertyValueFactory<>("position"));
+        positionColumnF.setSortable(false);
         
         runsPerWinsColumnF.setCellValueFactory(new PropertyValueFactory<>("RW"));
+        runsPerWinsColumnF.setSortable(false);
         homePerSaveColumnF.setCellValueFactory(new PropertyValueFactory<>("HRSV"));
+        homePerSaveColumnF.setSortable(false);
         runsBattedInPerOutColumnF.setCellValueFactory(new PropertyValueFactory<>("RBIK"));
+        runsBattedInPerOutColumnF.setSortable(false);
         stealsPerERAColumnF.setCellValueFactory(new PropertyValueFactory<>("SBERA"));
+        stealsPerERAColumnF.setSortable(false);
         avgPerWhipColumnF.setCellValueFactory(new PropertyValueFactory<>("BAWHIP"));
+        avgPerWhipColumnF.setSortable(false);
         estimValueColumnF.setCellValueFactory(new PropertyValueFactory<>("eta"));
+        estimValueColumnF.setSortable(false);
         contractColumnF.setCellValueFactory(new PropertyValueFactory<>("contract"));
+        contractColumnF.setSortable(false);
         salaryColumnF.setCellValueFactory(new PropertyValueFactory<>("salary"));
+        salaryColumnF.setSortable(false);
         
-        /*taxiPlayersTable.getColumns().addAll(firstColumnF, lastColumnF, proTeamColumnF, positionColumnF, 
+        taxiPlayersTable.getColumns().addAll(firstColumnF, lastColumnF, proTeamColumnF, positionColumnF, 
                 runsPerWinsColumnF, homePerSaveColumnF, runsBattedInPerOutColumnF, 
-                    stealsPerERAColumnF, avgPerWhipColumnF, estimValueColumnF);*/
+                    stealsPerERAColumnF, avgPerWhipColumnF, estimValueColumnF);
         startingLineupTable.getColumns().addAll(teamPositionColumnF, firstColumnF, lastColumnF, 
                 proTeamColumnF, positionColumnF, runsPerWinsColumnF, homePerSaveColumnF, 
                 runsBattedInPerOutColumnF, stealsPerERAColumnF, avgPerWhipColumnF, 
@@ -565,7 +578,7 @@ public class WDK_GUI {
             int ab = Integer.parseInt(hitterList.getJsonObject(i).getString("AB"));
             int hits = Integer.parseInt(hitterList.getJsonObject(i).getString("H"));
             int runs = Integer.parseInt(hitterList.getJsonObject(i).getString("R"));
-            int homeRuns = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
+            int homeRuns = Integer.parseInt(hitterList.getJsonObject(i).getString("HR"));
             int runsBattedIn = Integer.parseInt(hitterList.getJsonObject(i).getString("RBI"));
             int stolenBases = Integer.parseInt(hitterList.getJsonObject(i).getString("SB"));
             Hitter b = new Hitter(fName, lName, team, year, note, nation, positions,
@@ -639,7 +652,7 @@ public class WDK_GUI {
             }
 
             Player b = new Player(fName, lName, team, positions, year, note, 
-                    runs, homeRuns, runsBattedIn, stolenBases, sb);
+                    runs, homeRuns, runsBattedIn, stolenBases, sb, ab, hits);
             playerList.add(b);
         }
             
@@ -687,6 +700,8 @@ public class WDK_GUI {
             selections = new String[]{"2B"};
         if(thirdBButton.isSelected())
             selections = new String[]{"3B"};
+        if(catcherButton.isSelected())
+            selections = new String[]{"C"};
         if(cornInButton.isSelected())
             selections = new String[]{"1B", "3B"};
         if(midInButton.isSelected())
@@ -718,7 +733,6 @@ public class WDK_GUI {
                     }
                 }
             }
-        //hitterTable.setItems(tempHitterList);
     }
     
     public void replaceTables(String table){
@@ -761,12 +775,10 @@ public class WDK_GUI {
             ObservableList<Hitter> dummy = FXCollections.observableArrayList();
         
             for (int i = 0; i < tempHitterList.size(); i++) {
-                //System.out.println(tempHitterList.size());
                 if(compareStrBeg(tempHitterList.get(i).getFirstName(), search) || compareStrBeg(tempHitterList.get(i).getLastName(), search)){
                     dummy.add(tempHitterList.get(i));
                 }
                 hitterTable.setItems(dummy);    
-                //fillTable(getTableSelection());
             }
         }
     }
@@ -778,6 +790,87 @@ public class WDK_GUI {
                 return i;
         }
         return x;
+    }
+    
+    public Player pitcherToPlayer(Pitcher p){
+        if(p.getIP() == 0){
+                p.setERA(-1); p.setWHIP(-1);
+            } else{
+                DecimalFormat df = new DecimalFormat("#.000"); 
+                p.setERA(Double.parseDouble(df.format(p.getEarnedRuns()*9/p.getIP())));
+                p.setWHIP(Double.parseDouble(df.format((p.getBasesOnballs() + p.getHits())/p.getIP())));
+            }
+
+        
+            Player c = new Player(p.getFirstName(), p.getLastName(), p.getTeam(), "P", p.getBirthYear(),
+                    p.getNotes(), p.getWins(), p.getSaves(), p.getStrikeOuts(), 
+                        p.getERA(), p.getWHIP(), p.getIP(), p.getBasesOnballs(), p.getEarnedRuns(), p.getHits());
+            return c;
+    }
+    public Pitcher playerToPitcher(Player p){
+        Pitcher x = new Pitcher(p.getFirstName(), p.getLastName(), p.getTeam(), p.getBirthYear(),
+           p.getNotes(), p.getBirthNation(), p.getIP(), p.getEarnedRuns(), p.getRW(), p.getHRSV(),
+            p.getHits(), (int)p.getWalks(), p.getRBIK());
+        
+        return x;
+    }
+    private void sortFantasyTables(String search){
+        ObservableList<Player> a = FXCollections.observableArrayList();
+        a.addAll(draftTeams.get(searchTeamName(search)).getStartingLineup());
+        draftTeams.get(searchTeamName(search)).getStartingLineup().removeAll(a);
+        for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("C")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);     i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("1B")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("3B")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("CI")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("2B")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("SS")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("MI")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("OF")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("U")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }
+        for(int i = 0; i < a.size(); i++){
+            if(a.get(i).getTeamPosition().equals("P")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
+                a.remove(i);   i--;
+            }
+        }
+        
     }
     
     private boolean compareStrBeg(String name, String search){
@@ -821,9 +914,8 @@ public class WDK_GUI {
                 int z = searchByName(pitcherList, x.getFirstName(), x.getLastName());
                 if(x.getPosition().contains("P"))
                     pitcherList.remove(z);
-                allHitterList.remove(searchByName(x.getFirstName(), x.getLastName(), allHitterList));
-
-                //System.out.println(allPlayerTable.getSelectionModel().getSelectedItem().getFirstName() + playerList.size());
+                pitcherList.remove(searchByName(pitcherList, x.getFirstName(), x.getLastName()));
+                
             } else if(pitcherButton.isSelected()){                
                 pitcherList.remove(searchByName(pitcherList, pitcherTable.getSelectionModel().getSelectedItem().getFirstName(), pitcherTable.getSelectionModel().getSelectedItem().getLastName()));
                 autoSearchTable(searchBar.getText());             
@@ -883,6 +975,7 @@ public class WDK_GUI {
         fantasyTeamComboBox.setOnAction(e ->{            
             int x = searchTeamName(fantasyTeamComboBox.getValue().toString());
             startingLineupTable.setItems(draftTeams.get(x).getStartingLineup());
+            sortFantasyTables(fantasyTeamComboBox.getValue().toString());
         });
         
         allButton.setOnAction(e -> {
@@ -927,28 +1020,32 @@ public class WDK_GUI {
         allPlayerTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 Player b = allPlayerTable.getSelectionModel().getSelectedItem();
-                EditPlayerDialog x = new EditPlayerDialog(primaryStage, b, this);
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, b, this, true);
                 x.showEditPlayerDialog();
             }
         });
         hitterTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
-                EditPlayerDialog x = new EditPlayerDialog(primaryStage, hitterTable.getSelectionModel().getSelectedItem(), this);
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, hitterTable.getSelectionModel().getSelectedItem(), this, true);
                 x.showEditPlayerDialog();
             }
         });
         pitcherTable.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
-                EditPlayerDialog x = new EditPlayerDialog(primaryStage, pitcherTable.getSelectionModel().getSelectedItem(), this);
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, pitcherTable.getSelectionModel().getSelectedItem(), this, true);
                 x.showEditPlayerDialog();
             }
         });
+        startingLineupTable.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                EditPlayerDialog x = new EditPlayerDialog(primaryStage, startingLineupTable.getSelectionModel().getSelectedItem(), this, false);
+                x.showEditPlayerDialog();
+            }
+        });
+        
         removeButton.setOnAction(e -> {
             doDeletePlayer();
         });
-        
-        
-        
         
         //MAKE IT SO IT EDITS THE THE OTHER TABLE AS WELLS
         notesAllColumn.setOnEditCommit(
