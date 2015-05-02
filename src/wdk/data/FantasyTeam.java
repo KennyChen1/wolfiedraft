@@ -6,11 +6,13 @@ import javafx.collections.ObservableList;
 public class FantasyTeam{
     
     String fantasyTeamName;
-    ObservableList<Player> startingLineup = FXCollections.observableArrayList();
-    ObservableList<Player> taxiRoster = FXCollections.observableArrayList();
+    ObservableList<Player> startingLineup;
+    ObservableList<Player> taxiRoster;
     
     public FantasyTeam(String teamName) {
         this.fantasyTeamName = teamName;
+        this.startingLineup = FXCollections.observableArrayList();
+        this.taxiRoster = FXCollections.observableArrayList();
     }
     
     public String getFantasyTeamName(){

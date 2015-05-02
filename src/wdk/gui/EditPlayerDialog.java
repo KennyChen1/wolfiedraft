@@ -103,11 +103,12 @@ public class EditPlayerDialog extends Stage {
         salaryComboLabel = new Label("Salary: ");
         
         fantasyTeamComboBox = new ComboBox();
-        fantasyTeamComboBox.getItems().add("");
+        fantasyTeamComboBox.getItems().add("Free Agent");
+        fantasyTeamComboBox.setValue("Free Agent");
         fantasyTeamComboBox.getItems().addAll(gui.fantasyTeamList);
         positionComboBox = new ComboBox();
-        positionComboBox.getItems().addAll(player.getPosition().split("_"));
-        positionComboBox.setValue(player.getPosition().split("_")[0]);
+        //positionComboBox.getItems().addAll(player.getPosition().split("_"));
+        //positionComboBox.setValue(player.getPosition().split("_")[0]);
         
         contractComboBox = new ComboBox();
         contractComboBox.getItems().addAll("S2", "S1", "X");
@@ -131,9 +132,14 @@ public class EditPlayerDialog extends Stage {
         completeButton.setOnAction(completeCancelHandler);
         cancelButton.setOnAction(completeCancelHandler);
       
+        fantasyTeamComboBox.setOnAction(e ->{
+            fillComboBox(player, gui);
+        });
         completeButton.setOnAction(e -> {
             try{Player x = null;
-                if(availPlayer){//from free agent to team        
+                if(availPlayer){//from free agent to team  
+                    if(this.fantasyTeamComboBox.getValue().toString().equals("Free Agent")){
+                    } else{
                     if(gui.allButton.isSelected())
                         x = gui.allPlayerTable.getSelectionModel().getSelectedItem();
                     else if(gui.pitcherButton.isSelected()){
@@ -158,11 +164,10 @@ public class EditPlayerDialog extends Stage {
                     x.setFantasyTeam(this.fantasyTeamComboBox.getValue().toString());
                     gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getStartingLineup().add(x);
                     gui.doDeletePlayer();
-                    
+                }    
             } else{
                     x = gui.startingLineupTable.getSelectionModel().getSelectedItem();
-                       System.out.println(this.fantasyTeamComboBox.getValue());
-                    if(this.fantasyTeamComboBox.getValue() == null){//back to free agent
+                    if(this.fantasyTeamComboBox.getValue().toString().equals("Free Agent")){//back to free agent
                         gui.playerList.add(x);
                         if(!x.getPosition().contains("P")){
                             Hitter zz = new Hitter(x.getFirstName(), x.getLastName(), x.getTeam(), x.getBirthYear(),
@@ -196,12 +201,15 @@ public class EditPlayerDialog extends Stage {
                         b.add(x);
                     }
             }
+                gui.sortFantasyTables(this.fantasyTeamComboBox.getValue().toString());
                 this.close();
             } catch(NumberFormatException x){
                 UnfilledDialog xy = new UnfilledDialog(primaryStage);
                 xy.showAndWait();
             }
         });
+        
+        
         
         // NOW LET'S ARRANGE THEM ALL AT ONCE
         gridPane.add(headingLabel, 0, 0, 1, 1);
@@ -225,6 +233,43 @@ public class EditPlayerDialog extends Stage {
         this.setScene(dialogScene);
     }
     
+    private void fillComboBox(Player player, WDK_GUI gui){
+        if(!fantasyTeamComboBox.getValue().toString().equals("Free Agent")){
+        ObservableList<Player> x = gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
+        if(x.size() < 23){
+            String[] pos = player.getPosition().split("_");
+           
+            for(int j = 0; j < pos.length; j++){
+            int count = 0;
+                for(int i = 0; i < x.size(); i++){
+                    if(x.get(i).getTeamPosition().equals(pos[j])){
+                        count++;
+                    }
+                }
+                
+                if(count < 1 && pos[j].equals("U"))
+                    positionComboBox.getItems().add("U");
+                if(count < 2 && pos[j].equals("C"))
+                    positionComboBox.getItems().add("C");
+                if(count < 1 && pos[j].equals("1B"))
+                    positionComboBox.getItems().add("1B");
+                if(count < 1 && pos[j].equals("CI"))
+                    positionComboBox.getItems().add("CI");
+                if(count < 1 && pos[j].equals("3B"))
+                    positionComboBox.getItems().add("3B");
+                if(count < 1 && pos[j].equals("2B"))
+                    positionComboBox.getItems().add("2B");
+                if(count < 1 && pos[j].equals("MI"))
+                    positionComboBox.getItems().add("MI");
+                if(count < 1 && pos[j].equals("SS"))
+                    positionComboBox.getItems().add("SS");
+                if(count < 5 && pos[j].equals("OF"))
+                    positionComboBox.getItems().add("OF");
+                if(count < 9 && pos[j].equals("P"))
+                    positionComboBox.getItems().add("P");
+            }
+        }}
+    }
     
     public String getSelection() {
         return selection;

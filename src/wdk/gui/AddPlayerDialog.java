@@ -159,7 +159,11 @@ public class AddPlayerDialog extends Stage {
             
             Hitter x = new Hitter(firstNameText.getText(), lastNameText.getText(), 
                         proTeamComboBox.getSelectionModel().getSelectedItem().toString(), posStr);
-                gui.allHitterList.add(x);
+            gui.allHitterList.add(x);
+            
+            Player y = new Player(firstNameText.getText(), lastNameText.getText(), 
+                        proTeamComboBox.getSelectionModel().getSelectedItem().toString(), posStr);
+            gui.playerList.add(y);
             this.close();
             
             }});

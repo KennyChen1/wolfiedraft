@@ -103,7 +103,7 @@ public class AddFantasyTeamDialog extends Stage {
         gridPane.add(cancelButton, 1, 2);
 
         completeButton.setOnAction(e -> {
-            try{
+            {
             if(fantasyNameTextField.getText().equals("")){
                 UnfilledDialog a = new UnfilledDialog(primaryStage);
                 a.showDialog();
@@ -114,19 +114,18 @@ public class AddFantasyTeamDialog extends Stage {
                     
                 }
                 this.close();
-            } else if(title.equals("Edit Fantasy Team")){                
-                int x = gui.fantasyTeamList.indexOf(gui.fantasyTeamComboBox.getSelectionModel().getSelectedItem());
-                gui.fantasyTeamList.set(x, fantasyNameTextField.getText());                
-                gui.draftTeams.get(gui.searchTeamName(gui.fantasyTeamComboBox.getValue().toString())).setFantasyTeamName(fantasyNameTextField.getText());
-                gui.fantasyTeamComboBox.setValue(fantasyNameTextField.getText());
-                this.close();
-            }} catch(Exception x){
-                UnfilledDialog a = new UnfilledDialog(primaryStage);
-                a.showDialog();
-            }
-            
+            } else if(title.equals("Edit Fantasy Team") && !(gui.fantasyTeamComboBox.getValue() == null)){
+                int dPos = gui.searchTeamName(gui.fantasyTeamComboBox.getValue().toString());
+                gui.draftTeams.get(dPos).setFantasyTeamName(this.fantasyNameTextField.getText());
+                for(int i = 0; i < gui.fantasyTeamList.size(); i++){
+                    if(gui.fantasyTeamList.get(i).equals(gui.fantasyTeamComboBox.getValue().toString())){
+                        gui.fantasyTeamList.set(i, this.fantasyNameTextField.getText());
+                        break;
+                    }
+                } gui.fantasyTeamComboBox.setValue(this.fantasyNameTextField.getText());                
+                this.close();  
+            }}          
         });
-        
         // AND PUT THE GRID PANE IN THE WINDOW
         dialogScene = new Scene(gridPane);
         this.setScene(dialogScene);

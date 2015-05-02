@@ -575,6 +575,7 @@ public class WDK_GUI {
             String note = hitterList.getJsonObject(i).getString("NOTES");
             String nation = hitterList.getJsonObject(i).getString("NATION_OF_BIRTH");
             String positions = hitterList.getJsonObject(i).getString("QP");
+            positions = addPosition(positions);
             int ab = Integer.parseInt(hitterList.getJsonObject(i).getString("AB"));
             int hits = Integer.parseInt(hitterList.getJsonObject(i).getString("H"));
             int runs = Integer.parseInt(hitterList.getJsonObject(i).getString("R"));
@@ -636,6 +637,7 @@ public class WDK_GUI {
             int year = Integer.parseInt(hitterList.getJsonObject(i).getString("YEAR_OF_BIRTH"));
             String note = hitterList.getJsonObject(i).getString("NOTES");
             String positions = hitterList.getJsonObject(i).getString("QP");
+            positions = addPosition(positions);
             int ab = Integer.parseInt(hitterList.getJsonObject(i).getString("AB"));
             int hits = Integer.parseInt(hitterList.getJsonObject(i).getString("H"));
             int runs = Integer.parseInt(hitterList.getJsonObject(i).getString("R"));
@@ -752,6 +754,17 @@ public class WDK_GUI {
         autoSearchTable(searchBar.getText());
     }
     
+    private String addPosition(String pos){
+        String a = pos;
+            if(a.contains("1B") || a.contains("3B"))
+                a = a + "_" + "CI";
+            if(a.contains("2B") || a.contains("SS"))
+                a = a + "_" + "MI";
+            if(!a.contains("P"))
+                a = a + "_" + "U";
+        return a;
+    }
+    
     private void autoSearchTable(String search){
         if(allButton.isSelected()){
             ObservableList<Player> dummy = FXCollections.observableArrayList();
@@ -814,7 +827,7 @@ public class WDK_GUI {
         
         return x;
     }
-    private void sortFantasyTables(String search){
+    void sortFantasyTables(String search){
         ObservableList<Player> a = FXCollections.observableArrayList();
         a.addAll(draftTeams.get(searchTeamName(search)).getStartingLineup());
         draftTeams.get(searchTeamName(search)).getStartingLineup().removeAll(a);
@@ -912,9 +925,10 @@ public class WDK_GUI {
                 autoSearchTable(searchBar.getText());
 
                 int z = searchByName(pitcherList, x.getFirstName(), x.getLastName());
-                if(x.getPosition().contains("P"))
+                if(x.getPosition().contains("P")){
                     pitcherList.remove(z);
-                pitcherList.remove(searchByName(pitcherList, x.getFirstName(), x.getLastName()));
+                    pitcherList.remove(searchByName(pitcherList, x.getFirstName(), x.getLastName()));
+                }
                 
             } else if(pitcherButton.isSelected()){                
                 pitcherList.remove(searchByName(pitcherList, pitcherTable.getSelectionModel().getSelectedItem().getFirstName(), pitcherTable.getSelectionModel().getSelectedItem().getLastName()));
@@ -954,10 +968,36 @@ public class WDK_GUI {
         });
         draftRemoveButtion.setOnAction(e -> {
             try{
-                fantasyTeamList.remove(fantasyTeamComboBox.getSelectionModel().getSelectedItem().toString());
-            }catch(Exception x){
+                ObservableList<Player> pla = draftTeams.get(searchTeamName(fantasyTeamComboBox.getValue().toString())).getStartingLineup();
+                        playerList.addAll(pla);
+                        for(int i = 0; i < pla.size(); i++){
+                            if(!pla.get(i).getPosition().contains("P")){
+                                Hitter zz = new Hitter(pla.get(i).getFirstName(), pla.get(i).getLastName(), pla.get(i).getTeam(), 
+                                  pla.get(i).getBirthYear(), pla.get(i).getNotes(), pla.get(i).getBirthNation(), pla.get(i).getPosition(), 
+                                        pla.get(i).getAB(), pla.get(i).getRW(), pla.get(i).getHits(), pla.get(i).getHRSV(), pla.get(i).getRBIK(), 
+                                        (int)(pla.get(i).getSBERA()));
+                                allHitterList.add(zz);
+                            } else{
+                                Pitcher xy = playerToPitcher(pla.get(i));
+                                pitcherList.add(xy);
+                            }
+                    }   
+                        pla.removeAll(pla);
+                        draftTeams.remove(searchTeamName(fantasyTeamComboBox.getValue().toString()));
+                        
+                        for(int i = 0; i < this.fantasyTeamList.size(); i++){
+                            if(fantasyTeamList.get(i).equals(fantasyTeamComboBox.getValue())){                                
+                                fantasyTeamList.remove(i);                                   
+                                break;
+                            }
+                        }
+                        fantasyTeamComboBox.setValue(null);
+                        
+            } catch(NullPointerException ex){
+                System.out.println(ex.getMessage());
             }
         });
+        
         draftEditButtion.setOnAction(e -> {
             AddFantasyTeamDialog a = new AddFantasyTeamDialog(primaryStage, this, "Edit Fantasy Team");
             a.showDialog();
@@ -972,11 +1012,20 @@ public class WDK_GUI {
             }
         });
         
-        fantasyTeamComboBox.setOnAction(e ->{            
+        fantasyTeamComboBox.setOnAction(e ->{
+            try{
             int x = searchTeamName(fantasyTeamComboBox.getValue().toString());
-            startingLineupTable.setItems(draftTeams.get(x).getStartingLineup());
+            System.out.println(x);
+            try{
+                startingLineupTable.setItems(draftTeams.get(x).getStartingLineup());
+            } catch(Exception z){
+                System.out.println(z.getMessage());
+            }
             sortFantasyTables(fantasyTeamComboBox.getValue().toString());
-        });
+        }catch(NullPointerException as){
+                as.getMessage();
+                }});
+        
         
         allButton.setOnAction(e -> {
             replaceTables("allPlayerTable"); 
