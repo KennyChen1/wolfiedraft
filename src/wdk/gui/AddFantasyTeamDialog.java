@@ -74,12 +74,6 @@ public class AddFantasyTeamDialog extends Stage {
         // ON WHETHER WE'RE ADDING OR EDITING
         headingLabel = new Label(title);
         
-        
-        /*salaryTextBox = new TextField();
-                salaryTextBox.textProperty().addListener((observable, oldValue, newValue) -> {
-            //curPitcher.setNotes(newValue);
-        });*/
-                     
         // AND FINALLY, THE BUTTONS
         completeButton = new Button(COMPLETE);
         cancelButton = new Button(CANCEL);
@@ -105,7 +99,7 @@ public class AddFantasyTeamDialog extends Stage {
         completeButton.setOnAction(e -> {
             {
             if(fantasyNameTextField.getText().equals("")){
-                UnfilledDialog a = new UnfilledDialog(primaryStage);
+                ErrorDialog a = new ErrorDialog(primaryStage, "All of the info must be filled and valid!");
                 a.showDialog();
             } else if(title.equals("Add Fantasy Team")){
                 if(gui.searchTeamName(fantasyNameTextField.getText()) == -1){// MAKE ERROR DIALOG FOR NON UNIQUE NAME

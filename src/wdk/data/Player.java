@@ -1,7 +1,9 @@
 package wdk.data;
 
+import java.util.Comparator;
 
-public class Player {
+
+public class Player implements Comparator{
 
     // THESE COURSE DETAILS DESCRIBE WHAT'S REQUIRED BY
     // THE COURSE SITE PAGES
@@ -274,4 +276,15 @@ public class Player {
     public void setEarnedRuns(int earnedRuns){
         this.earnedRuns = earnedRuns;
     }
+    
+    @Override
+    public int compare(Object o1, Object o2) {
+        Player playerF = (Player)o1;
+        Player playerS = (Player)o2;
+         if(playerF.getLastName().compareTo(playerS.getLastName()) == 0)
+            return playerF.getFirstName().compareTo(playerS.getFirstName());
+        return playerF.getLastName().compareTo(playerS.getLastName());
+    }
+
+   
 }

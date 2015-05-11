@@ -8,6 +8,8 @@ import wolfieballdraftkit.WDK_PropertyType;
 import wdk.controller.FileController;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -128,13 +130,13 @@ public class WDK_GUI {
     TableColumn whipColumn;     TableColumn estimValueColumn;   
     TableColumn notesAllColumn; TableColumn notesHitColumn;     TableColumn notesPitchColumn;
     TableColumn runsColumn;     TableColumn homerunsColumn;     TableColumn runsBattedInColumn;
-    TableColumn battingAverageColumn;                           TableColumn runsPerWinsColumn;
+    TableColumn battingAverageColumn;                           TableColumn runsOrWinsColumn;
     TableColumn homePerSaveColumn;                              TableColumn runsBattedInPerOutColumn;
     TableColumn stealsPerERAColumn;                             TableColumn avgPerWhipColumn;
     
     TableColumn teamPositionColumnF; 
     TableColumn firstColumnF;    TableColumn lastColumnF;         TableColumn proTeamColumnF;
-    TableColumn positionColumnF; TableColumn runsPerWinsColumnF;  TableColumn homePerSaveColumnF;       
+    TableColumn positionColumnF; TableColumn runsOrWinsColumnF;  TableColumn homePerSaveColumnF;       
     TableColumn runsBattedInPerOutColumnF;   TableColumn stealsPerERAColumnF; 
     TableColumn avgPerWhipColumnF;      TableColumn estimValueColumnF;
     TableColumn contractColumnF;        TableColumn salaryColumnF;
@@ -181,9 +183,35 @@ public class WDK_GUI {
     VBox draftSummaryWorkspacePane;        
     Label draftSummaryHeadingLabel;
     
+    
+    //MLB TEAMS VARIABLES
     SplitPane mlbTeamsSplitPane;
     VBox mlbTeamsWorkspacePane;        
     Label mlbTeamsHeadingLabel;
+    ComboBox mlbTeamsComboBox;
+    ObservableList<Player> mlbPlayers;
+    ObservableList<String> mlbTeamsList;
+    TableView<Player> mlbTable;
+    
+    //FANTASY STANDING VARIABLES
+    TableView<FantasyTeam> standingsTable;
+    TableColumn teamNameColumn;
+    TableColumn playersNeededColumn;
+    TableColumn moolahLeftColumn;
+    TableColumn moolahPerColumn;
+    TableColumn rColumn;
+    TableColumn hrColumn;
+    TableColumn rbiColumn;
+    TableColumn sbColumn;
+    TableColumn baColumn;
+    TableColumn wColumn;
+    TableColumn svColumn;
+    TableColumn kColumn;
+    TableColumn eraColumn;
+    TableColumn whipAvgColumn;
+    TableColumn totalPtsColumn;
+    
+    
     
     FileController a = new FileController();
     JsonArray pitchersList;
@@ -231,6 +259,7 @@ public class WDK_GUI {
         initFantasyTeamsWorkspace();
         initAvailablePlayersWorkspace();
         initFantasyStandingWorkspace();
+        initMLBTeamsWorkspace();
         initEventHandlers();}
     
      private void initWindow(String windowTitle) {
@@ -369,7 +398,7 @@ public class WDK_GUI {
         lastColumnF = new TableColumn(COL_LAST);
         proTeamColumnF = new TableColumn(COL_PROTEAM);
         positionColumnF = new TableColumn(COL_POS);
-        runsPerWinsColumnF = new TableColumn(COL_RPW);
+        runsOrWinsColumnF = new TableColumn(COL_RPW);
         homePerSaveColumnF = new TableColumn(COL_HRPSV);
         runsBattedInPerOutColumnF = new TableColumn(COL_RBIPK);
         stealsPerERAColumnF = new TableColumn(COL_SBPERA);
@@ -389,8 +418,8 @@ public class WDK_GUI {
         positionColumnF.setCellValueFactory(new PropertyValueFactory<>("position"));
         positionColumnF.setSortable(false);
         
-        runsPerWinsColumnF.setCellValueFactory(new PropertyValueFactory<>("RW"));
-        runsPerWinsColumnF.setSortable(false);
+        runsOrWinsColumnF.setCellValueFactory(new PropertyValueFactory<>("RW"));
+        runsOrWinsColumnF.setSortable(false);
         homePerSaveColumnF.setCellValueFactory(new PropertyValueFactory<>("HRSV"));
         homePerSaveColumnF.setSortable(false);
         runsBattedInPerOutColumnF.setCellValueFactory(new PropertyValueFactory<>("RBIK"));
@@ -407,10 +436,10 @@ public class WDK_GUI {
         salaryColumnF.setSortable(false);
         
         taxiPlayersTable.getColumns().addAll(firstColumnF, lastColumnF, proTeamColumnF, positionColumnF, 
-                runsPerWinsColumnF, homePerSaveColumnF, runsBattedInPerOutColumnF, 
+                runsOrWinsColumnF, homePerSaveColumnF, runsBattedInPerOutColumnF, 
                     stealsPerERAColumnF, avgPerWhipColumnF, estimValueColumnF);
         startingLineupTable.getColumns().addAll(teamPositionColumnF, firstColumnF, lastColumnF, 
-                proTeamColumnF, positionColumnF, runsPerWinsColumnF, homePerSaveColumnF, 
+                proTeamColumnF, positionColumnF, runsOrWinsColumnF, homePerSaveColumnF, 
                 runsBattedInPerOutColumnF, stealsPerERAColumnF, avgPerWhipColumnF, 
                     estimValueColumnF, contractColumnF, salaryColumnF);
         
@@ -442,9 +471,7 @@ public class WDK_GUI {
         outfielderButton = initRadioButton(radioButtonRow, WDK_PropertyType.OUTFIELDER_LABEL, group);
         utilityButton = initRadioButton(radioButtonRow, WDK_PropertyType.UTILITY_LABEL, group);
         pitcherButton = initRadioButton(radioButtonRow, WDK_PropertyType.PITCHER_LABEL, group);
- 
-        
-        
+         
         allButton.setSelected(true);
         
         availPlayersWorkspacePane.getChildren().add(bar);
@@ -453,9 +480,51 @@ public class WDK_GUI {
     }
     private void initFantasyStandingWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
-        fantasyStandingSplitPane = new SplitPane();
-        fantasyStandingWorkspacePane = new VBox();        
+        fantasyStandingWorkspacePane = new VBox();
         fantasyStandingHeadingLabel = initChildLabel(fantasyStandingWorkspacePane, WDK_PropertyType.FANTASY_STANDING_HEADING_LABEL, CLASS_HEADING_LABEL);
+        
+        standingsTable = new TableView();
+        
+        teamNameColumn = new TableColumn("Team Name");
+        playersNeededColumn = new TableColumn("Players Needed");
+        moolahLeftColumn = new TableColumn("$ Left");
+        moolahPerColumn = new TableColumn("$ PP");
+        rColumn = new TableColumn(COL_RUNS);
+        hrColumn = new TableColumn(COL_HOMERUNS);
+        rbiColumn = new TableColumn(COL_RUNS_BATTED_IN);
+        sbColumn = new TableColumn("SB");
+        baColumn = new TableColumn(COL_BATTING_AVERAGE);
+        wColumn = new TableColumn("W");
+        svColumn = new TableColumn("SV");
+        kColumn = new TableColumn(COL_STRIKEOUTS);
+        eraColumn = new TableColumn(COL_ERA);
+        whipAvgColumn = new TableColumn(COL_WHIP);
+        totalPtsColumn = new TableColumn("Total Points");
+        
+        teamNameColumn.setCellValueFactory(new PropertyValueFactory<>("fantasyTeamName"));
+        playersNeededColumn.setCellValueFactory(new PropertyValueFactory<>("playersRequired"));
+        moolahLeftColumn.setCellValueFactory(new PropertyValueFactory<>("funding"));
+        moolahPerColumn.setCellValueFactory(new PropertyValueFactory<>("avgFundingPerPlayer"));
+        rColumn.setCellValueFactory(new PropertyValueFactory<>("runs"));
+        hrColumn.setCellValueFactory(new PropertyValueFactory<>("homeRuns"));
+        rbiColumn.setCellValueFactory(new PropertyValueFactory<>("RBI"));
+        sbColumn.setCellValueFactory(new PropertyValueFactory<>("stolenBases"));
+        baColumn.setCellValueFactory(new PropertyValueFactory<>("battingAverage"));
+        wColumn.setCellValueFactory(new PropertyValueFactory<>("wins"));
+        svColumn.setCellValueFactory(new PropertyValueFactory<>("saves"));
+        kColumn.setCellValueFactory(new PropertyValueFactory<>("strikeouts"));
+        eraColumn.setCellValueFactory(new PropertyValueFactory<>("ERA"));
+        whipAvgColumn.setCellValueFactory(new PropertyValueFactory<>("WHIP"));
+        totalPtsColumn.setCellValueFactory(new PropertyValueFactory<>("totalPoints"));
+        
+        standingsTable.setItems(draftTeams);
+        
+        standingsTable.getColumns().addAll(teamNameColumn, playersNeededColumn, 
+                moolahLeftColumn, moolahPerColumn, rColumn, hrColumn, rbiColumn,
+                    sbColumn, baColumn, wColumn, svColumn, kColumn, eraColumn, 
+                        whipAvgColumn, totalPtsColumn);
+        
+        fantasyStandingWorkspacePane.getChildren().add(standingsTable);
     }
     private void initDraftWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
@@ -466,10 +535,34 @@ public class WDK_GUI {
     }
     private void initMLBTeamsWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
-        mlbTeamsSplitPane = new SplitPane();
         mlbTeamsWorkspacePane = new VBox();        
         mlbTeamsHeadingLabel = initChildLabel(mlbTeamsWorkspacePane, WDK_PropertyType.MLB_TEAMS_HEADING_LABEL, CLASS_HEADING_LABEL);
-        wdkPane.setCenter(mlbTeamsWorkspacePane);
+        mlbTeamsList = FXCollections.observableArrayList("ATL", "AZ", "CHC", "CIN", "COL", "LAD", "MIA", 
+                "MIL", "NYM", "PHI", "PIT", "SD", "SF", "STL", "WSH");
+        
+        HBox sndRow = new HBox();
+        mlbTeamsComboBox = new ComboBox(mlbTeamsList);
+        mlbTeamsHeadingLabel = initLabel(WDK_PropertyType.MLB_TEAMS_COMBOBOX_LABEL, CLASS_HEADING_LABEL);
+        
+        sndRow.getChildren().add(mlbTeamsHeadingLabel);
+        sndRow.getChildren().add(mlbTeamsComboBox);
+
+        mlbTeamsWorkspacePane.getChildren().add(sndRow);
+        
+        VBox mlbBox = new VBox();
+        mlbTable = new TableView();
+        mlbBox.getChildren().add(mlbTable);
+        
+        mlbTeamsWorkspacePane.getChildren().add(mlbBox);
+        TableColumn mlbFirstColumn = new TableColumn(COL_FIRST);    
+        TableColumn mlbLastColumn = new TableColumn(COL_LAST);
+        TableColumn mlbPositionColumn = new TableColumn(COL_POS);
+        
+        mlbFirstColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        mlbLastColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        mlbPositionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
+        
+        mlbTable.getColumns().addAll(mlbFirstColumn, mlbLastColumn, mlbPositionColumn);
     }
     
     private void initPitcherTable() throws IOException  {
@@ -522,8 +615,9 @@ public class WDK_GUI {
                 int hits = Integer.parseInt(pitchersList.getJsonObject(i).getString("H"));
                 int balls = Integer.parseInt(pitchersList.getJsonObject(i).getString("BB"));
                 int outs = Integer.parseInt(pitchersList.getJsonObject(i).getString("K")); 
+                
                 Pitcher b = new Pitcher(fName, lName, team, year, note, nation, ip, earnedRuns,
-                    wins, saves, hits,balls, outs);
+                    wins, saves, hits, balls, outs);
                 pitcherList.add(b);
             }
             
@@ -604,7 +698,7 @@ public class WDK_GUI {
         proTeamColumn = new TableColumn(COL_PROTEAM);
         positionColumn = new TableColumn(COL_POS);
         birthyearColumn = new TableColumn(COL_BIRTH);
-        runsPerWinsColumn = new TableColumn(COL_RPW);
+        runsOrWinsColumn = new TableColumn(COL_RPW);
         homePerSaveColumn = new TableColumn(COL_HRPSV);
         runsBattedInPerOutColumn = new TableColumn(COL_RBIPK);
         stealsPerERAColumn = new TableColumn(COL_SBPERA);
@@ -618,7 +712,7 @@ public class WDK_GUI {
         positionColumn.setCellValueFactory(new PropertyValueFactory<>("position"));
         birthyearColumn.setCellValueFactory(new PropertyValueFactory<>("birthYear"));
         
-        runsPerWinsColumn.setCellValueFactory(new PropertyValueFactory<>("RW"));
+        runsOrWinsColumn.setCellValueFactory(new PropertyValueFactory<>("RW"));
         homePerSaveColumn.setCellValueFactory(new PropertyValueFactory<>("HRSV"));
         runsBattedInPerOutColumn.setCellValueFactory(new PropertyValueFactory<>("RBIK"));
         stealsPerERAColumn.setCellValueFactory(new PropertyValueFactory<>("SBERA"));
@@ -690,7 +784,7 @@ public class WDK_GUI {
         allPlayerTable.setItems(playerList);  
           
         allPlayerTable.getColumns().addAll(firstColumn, lastColumn, proTeamColumn, positionColumn, 
-                birthyearColumn, runsPerWinsColumn, homePerSaveColumn, runsBattedInPerOutColumn, 
+                birthyearColumn, runsOrWinsColumn, homePerSaveColumn, runsBattedInPerOutColumn, 
                     stealsPerERAColumn, avgPerWhipColumn, estimValueColumn, notesAllColumn);
      }
     
@@ -806,6 +900,7 @@ public class WDK_GUI {
     }
     
     public Player pitcherToPlayer(Pitcher p){
+        double era, whip;
         if(p.getIP() == 0){
                 p.setERA(-1); p.setWHIP(-1);
             } else{
@@ -829,8 +924,10 @@ public class WDK_GUI {
     }
     void sortFantasyTables(String search){
         ObservableList<Player> a = FXCollections.observableArrayList();
+        if(searchTeamName(search) != -1){//start of if
         a.addAll(draftTeams.get(searchTeamName(search)).getStartingLineup());
         draftTeams.get(searchTeamName(search)).getStartingLineup().removeAll(a);
+        
         for(int i = 0; i < a.size(); i++){
             if(a.get(i).getTeamPosition().equals("C")){
                 draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
@@ -883,7 +980,7 @@ public class WDK_GUI {
                 a.remove(i);   i--;
             }
         }
-        
+        }//end of if
     }
     
     private boolean compareStrBeg(String name, String search){
@@ -925,9 +1022,9 @@ public class WDK_GUI {
                 autoSearchTable(searchBar.getText());
 
                 int z = searchByName(pitcherList, x.getFirstName(), x.getLastName());
-                if(x.getPosition().contains("P")){
+                if(x.getPosition().contains("P") && z != -1){
                     pitcherList.remove(z);
-                    pitcherList.remove(searchByName(pitcherList, x.getFirstName(), x.getLastName()));
+                    
                 }
                 
             } else if(pitcherButton.isSelected()){                
@@ -940,6 +1037,57 @@ public class WDK_GUI {
             }
     }
     
+    private void assignPoints(){
+        if(draftTeams.size() == 0) {
+        } else{
+            Collections.sort(draftTeams, FantasyTeam.getRunsComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getHomeRunsComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getRBIComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getSBComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getBAComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getWinsComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getSavesComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getStrikeoutsComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getERAComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            Collections.sort(draftTeams, FantasyTeam.getWHIPComparator());
+            for(int i = 0; i < draftTeams.size(); i++){
+                draftTeams.get(i).setTotalPts(draftTeams.get(i).getTotalPoints() + draftTeams.size()-i);
+            }
+            
+            ObservableList<FantasyTeam> a = FXCollections.observableArrayList();
+            a.addAll(draftTeams);
+            draftTeams.removeAll(draftTeams);
+            draftTeams.addAll(a);
+        }
+    }
+    
     private void initEventHandlers() throws IOException {
         newDraftButton.setOnAction(e -> {
             NewDraftDialog a = new NewDraftDialog(primaryStage);
@@ -950,16 +1098,18 @@ public class WDK_GUI {
          wdkPane.setCenter(availPlayersWorkspacePane);
         });
         fantasyStandingButton.setOnAction(e -> {
-            wdkPane.setCenter(fantasyTeamWorkspacePane);
+            wdkPane.setCenter(fantasyStandingWorkspacePane);
+            assignPoints();
         });
         fantasyTeamsButton.setOnAction(e -> {
-            initFantasyTeamsWorkspace();
+            wdkPane.setCenter(fantasyTeamWorkspacePane);
         });        
         draftButton.setOnAction(e -> {
             initDraftWorkspace();
         });
         MLBTeamButton.setOnAction(e -> {
-            initMLBTeamsWorkspace();
+            wdkPane.setCenter(mlbTeamsWorkspacePane);
+            
         });
         
         draftAddButtion.setOnAction(e -> {
@@ -1015,7 +1165,6 @@ public class WDK_GUI {
         fantasyTeamComboBox.setOnAction(e ->{
             try{
             int x = searchTeamName(fantasyTeamComboBox.getValue().toString());
-            System.out.println(x);
             try{
                 startingLineupTable.setItems(draftTeams.get(x).getStartingLineup());
             } catch(Exception z){
@@ -1023,8 +1172,21 @@ public class WDK_GUI {
             }
             sortFantasyTables(fantasyTeamComboBox.getValue().toString());
         }catch(NullPointerException as){
-                as.getMessage();
-                }});
+                as.getMessage();    
+        }});
+        
+        mlbTeamsComboBox.setOnAction(e -> {
+            mlbPlayers = FXCollections.observableArrayList();
+            for (Player playerList1 : playerList) {
+                if (playerList1.getTeam().equals(mlbTeamsComboBox.getValue())) {
+                    mlbPlayers.add(playerList1);
+                    Collections.sort(mlbPlayers, playerList1);
+                }
+            }
+            
+            
+            mlbTable.setItems(mlbPlayers);
+        });
         
         
         allButton.setOnAction(e -> {

@@ -37,7 +37,7 @@ import wdk.controller.FileController;
 import wdk.data.Hitter;
 import wdk.data.Pitcher;
 import wdk.gui.WDK_GUI;
-import wdk.gui.UnfilledDialog;
+import wdk.gui.ErrorDialog;
 import wdk.data.Player;
 import static wolfieballdraftkit.WDK_StartupConstants.*;
 
@@ -148,7 +148,7 @@ public class AddPlayerDialog extends Stage {
                 posStr = posStr.substring(0, posStr.length()-1);
             if((!completed || firstNameText.getText().equals("") || lastNameText.getText().equals("") || 
                     proTeamComboBox.getSelectionModel().getSelectedItem().toString().equals(""))){
-                UnfilledDialog aa = new UnfilledDialog(primaryStage);
+                    ErrorDialog aa = new ErrorDialog(primaryStage, "All of the info must be filled and valid!");
                 aa.showAndWait();
             } else{
             if(pBox.isSelected()){

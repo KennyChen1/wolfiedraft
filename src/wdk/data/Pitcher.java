@@ -25,9 +25,9 @@ public class Pitcher extends Player{
         this.hits = hits;
         this.basesOnballs = basesOnballs;
         this.strikeOuts = strikeOuts;
-        if(IP == 0)
-            this.ERA = 0;
-        else{
+        if(IP == 0){
+            this.ERA = -1; this.WHIP = -1;
+        } else{
             DecimalFormat df = new DecimalFormat("#.00"); 
             this.ERA = Double.parseDouble(df.format(earnedRuns*9/IP));
             this.WHIP = Double.parseDouble(df.format((basesOnballs + hits)/IP));

@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 import wdk.data.Player;
 import wdk.data.Hitter;
 import wdk.data.Pitcher;
-import wdk.gui.UnfilledDialog;
+import wdk.gui.ErrorDialog;
 import static wolfieballdraftkit.WDK_StartupConstants.*;
 
 /**
@@ -107,6 +107,7 @@ public class EditPlayerDialog extends Stage {
         fantasyTeamComboBox.setValue("Free Agent");
         fantasyTeamComboBox.getItems().addAll(gui.fantasyTeamList);
         positionComboBox = new ComboBox();
+        positionComboBox.setValue("");
         //positionComboBox.getItems().addAll(player.getPosition().split("_"));
         //positionComboBox.setValue(player.getPosition().split("_")[0]);
         
@@ -157,6 +158,12 @@ public class EditPlayerDialog extends Stage {
                            y.getBirthYear(), y.getNotes(), y.getRuns(), y.getHomeRuns(), 
                                y.getRunsBattedIn(), y.getStolenBases(), sb, y.getAB(), y.getHits());
                     }
+                    
+                    if((gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getFunding()
+                            - Integer.parseInt(salaryTextBox.getText())) < 0)
+                        throw new IllegalArgumentException();
+                    if(Integer.parseInt(salaryTextBox.getText()) < 0)
+                        throw new NumberFormatException();
 
                     x.setContract(contractComboBox.getValue().toString());
                     x.setTeamPosition(positionComboBox.getValue().toString());
@@ -164,10 +171,12 @@ public class EditPlayerDialog extends Stage {
                     x.setFantasyTeam(this.fantasyTeamComboBox.getValue().toString());
                     gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getStartingLineup().add(x);
                     gui.doDeletePlayer();
+                    
+                    gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).setFunding(Integer.parseInt(salaryTextBox.getText()));
                 }    
             } else{
                     x = gui.startingLineupTable.getSelectionModel().getSelectedItem();
-                    if(this.fantasyTeamComboBox.getValue().toString().equals("Free Agent")){//back to free agent
+                    if(this.fantasyTeamComboBox.getValue().toString().equals("Free Agent")){//BACK TO FREE AGENT
                         gui.playerList.add(x);
                         if(!x.getPosition().contains("P")){
                             Hitter zz = new Hitter(x.getFirstName(), x.getLastName(), x.getTeam(), x.getBirthYear(),
@@ -184,28 +193,55 @@ public class EditPlayerDialog extends Stage {
                             if(a.get(i).getFirstName().equals(x.getFirstName()) && a.get(i).getLastName().equals(x.getLastName()))
                                 a.remove(i);
                         }
-                    } else{// moving between teams
+                        
+                    gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam()))
+                            .setFunding(Integer.parseInt("-" + x.getSalary()));
 
+                    } else{// moving between teams
+                        if(x.getFantasyTeam().equals(this.fantasyTeamComboBox.getValue())){
+                            if(gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam())).getFunding() + x.getSalary()
+                                    - Integer.parseInt(this.salaryTextBox.getText()) < 0){
+                                throw new IllegalArgumentException();
+                            } else {
+                                gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam()))
+                                    .setFunding(Integer.parseInt("-" + x.getSalary()));
+                            }
+                        } else if((gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getFunding()
+                            - Integer.parseInt(salaryTextBox.getText())) < 0){
+                            throw new IllegalArgumentException();
+                        } else{
+                            gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam()))
+                            .setFunding(Integer.parseInt("-"+x.getSalary()));
+                            gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString()))
+                                    .setFunding(Integer.parseInt(salaryTextBox.getText()));
+                        }
+                        
+                        
                         x.setContract(contractComboBox.getValue().toString());
                         x.setTeamPosition(positionComboBox.getValue().toString());
                         x.setSalary(Integer.parseInt(salaryTextBox.getText()));
                         x.setFantasyTeam(fantasyTeamComboBox.getValue().toString());
 
-                        ObservableList<Player> a = gui.draftTeams.get(gui.searchTeamName(gui.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
-
-                        for(int i = 0; i < a.size(); i++){
-                            if(a.get(i).getFirstName().equals(x.getFirstName()) && a.get(i).getLastName().equals(x.getLastName()))
-                                a.remove(i);
+                        ObservableList<Player> old = gui.draftTeams.get(gui.searchTeamName(gui.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
+                        
+                         
+                        for(int i = 0; i < old.size(); i++){
+                            if(old.get(i).getFirstName().equals(x.getFirstName()) && old.get(i).getLastName().equals(x.getLastName()))
+                                old.remove(i);
                         }
                         ObservableList<Player> b = gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
                         b.add(x);
+                        
                     }
             }
                 gui.sortFantasyTables(this.fantasyTeamComboBox.getValue().toString());
                 this.close();
             } catch(NumberFormatException x){
-                UnfilledDialog xy = new UnfilledDialog(primaryStage);
+                ErrorDialog xy = new ErrorDialog(primaryStage, "Please input a valid number!");
                 xy.showAndWait();
+            } catch(IllegalArgumentException x){
+                ErrorDialog xy = new ErrorDialog(primaryStage, "Not enough funding");
+                xy.showAndWait();                
             }
         });
         

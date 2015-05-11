@@ -23,7 +23,7 @@ import wdk.data.Player;
  *
  * @author Kenny Chen
  */
-public class UnfilledDialog extends Stage {
+public class ErrorDialog extends Stage {
     // THIS IS THE OBJECT DATA BEHIND THIS UI
     //Lecture lectures;
     
@@ -38,15 +38,16 @@ public class UnfilledDialog extends Stage {
     
     // CONSTANTS FOR OUR UI
     public static final String CLOSE = "Close";
-    public static final String MESSAGE_LABEL = "All of the info must be filled and valid!";
+    //public static final String MESSAGE_LABEL = "All of the info must be filled and valid!";
     
     /**
      * Initializes this dialog so that it can be used for either adding
      * new schedule items or editing existing ones.
      * 
      * @param primaryStage The owner of this modal dialog.
+     * @param ErrorMessage The error message to be added
      */
-    public UnfilledDialog(Stage primaryStage) {       
+    public ErrorDialog(Stage primaryStage, String ErrorMessage) {       
         // MAKE THIS DIALOG MODAL, MEANING OTHERS WILL WAIT
         // FOR IT WHEN IT IS DISPLAYED
         initModality(Modality.WINDOW_MODAL);
@@ -60,7 +61,7 @@ public class UnfilledDialog extends Stage {
         
         // PUT THE HEADING IN THE GRID, NOTE THAT THE TEXT WILL DEPEND
         // ON WHETHER WE'RE ADDING OR EDITING
-        headingLabel = new Label(MESSAGE_LABEL);
+        headingLabel = new Label(ErrorMessage);
     
         // NOW THE topic 
                      
@@ -77,8 +78,8 @@ public class UnfilledDialog extends Stage {
     
         EventHandler completeCancelHandler = (EventHandler<ActionEvent>) (ActionEvent ae) -> {
             Button sourceButton = (Button)ae.getSource();
-            UnfilledDialog.this.selection = sourceButton.getText();
-            UnfilledDialog.this.hide();
+            ErrorDialog.this.selection = sourceButton.getText();
+            ErrorDialog.this.hide();
         };
         
         closeButton.setOnAction(completeCancelHandler);
