@@ -8,10 +8,14 @@ import wolfieballdraftkit.WDK_PropertyType;
 import wdk.controller.FileController;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -44,6 +48,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import javax.json.JsonArray;
 import properties_manager.PropertiesManager;
 import wdk.data.FantasyTeam;
@@ -229,6 +234,7 @@ public class WDK_GUI {
     ObservableList<Player> draftSummaryList;
     ObservableList<Player> summaryStartingList;
     ObservableList<Player> summaryTaxiList;
+    Timeline timeline;
 
     
     FileController a = new FileController();
@@ -1095,6 +1101,93 @@ public class WDK_GUI {
             }
     }
     
+    public void doDeletePlayer(Player player){         
+                Player x = player;
+                int y = searchByName(x.getFirstName(), playerList, x.getLastName());
+                playerList.remove(y);
+
+                int z = searchByName(pitcherList, x.getFirstName(), x.getLastName());
+                
+                if(x.getPosition().contains("P") && z != -1){
+                    pitcherList.remove(z);
+                    
+                
+            }
+    }
+    
+    public void asgnRndPlayer(){//get rndTeamPosition;
+    String x = getRndPos();
+    Player rnd;    
+    if(!getRndPos().equals("")){
+        boolean yy = true;
+        do{
+            yy = true;
+            rnd = playerList.get((int)(Math.random()*playerList.size()));
+            if(getRndPos().substring(1).equals("C")){
+                String[] p = rnd.getPosition().split("_");
+                for(int i = 0; i < p.length; i++){
+                    if(p[i].equals("C"))
+                        yy = false;
+                }
+            } else{
+                yy = false;
+            }
+        }while(!rnd.getPosition().contains(getRndPos().substring(1)) || yy);
+        rnd.setTeamPosition(getRndPos().substring(1));
+        rnd.setSalary(1);
+        rnd.setContract("S2");
+        rnd.setFantasyTeam(draftTeams.get(Integer.parseInt(x.substring(0, 1))).getFantasyTeamName());
+        
+        draftTeams.get(Integer.parseInt(x.substring(0, 1))).setFunding(1);
+        draftTeams.get(Integer.parseInt(getRndPos().substring(0, 1))).getStartingLineup().add(rnd);
+           
+        sortFantasyTables(draftTeams.get(Integer.parseInt(x.substring(0, 1))).getFantasyTeamName());
+        
+        summaryStartingList.add(rnd);
+        draftSummaryList.removeAll(draftSummaryList);
+        draftSummaryList.addAll(summaryStartingList);
+        draftSummaryList.addAll(summaryTaxiList);
+        try{
+            doDeletePlayer(rnd);
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        
+    }
+    //System.out.println(playerList.get(pos).getFirstName()+playerList.get(pos).getLastName());
+    }
+    public String getRndPos(){
+        if(draftTeams.size()>0){
+            for(int i = 0; i < draftTeams.size(); i++){
+                ObservableList<Player> b = draftTeams.get(i).getStartingLineup();
+                if((draftTeams.get(i).getStartingLineup().size() < 23))
+                    
+                    
+                    if(b.size() < 2 || !(b.size() >= 2 && (b.get(1).getTeamPosition().equals("C")))){
+                        return i+"C";
+                    }if(b.size() < 3 || !(b.size() >= 3 && (b.get(2).getTeamPosition().equals("1B"))))
+                        return i+"1B";
+                    if(b.size() < 4 || !(b.size() >= 4 && (b.get(3).getTeamPosition().equals("3B"))))
+                        return i+"3B";
+                    if(b.size() < 5 || !(b.size() >= 5 && (b.get(4).getTeamPosition().equals("CI"))))
+                        return i+"CI";
+                    if(b.size() < 6 || !(b.size() >= 6 && b.get(5).getTeamPosition().equals("2B")))
+                        return i+"2B";
+                    if(b.size() < 7 || !(b.size() >= 7 && b.get(6).getTeamPosition().equals("SS")))
+                        return i+"SS";
+                    if(b.size() < 8 || !(b.size() >= 8 && b.get(7).getTeamPosition().equals("MI")))
+                        return i+"MI";
+                    if(b.size() < 13 || !(b.size() >= 13 && b.get(12).getTeamPosition().equals("OF")))
+                        return i+"OF";
+                    if(b.size() < 14 || !(b.size() >= 14 && b.get(13).getTeamPosition().equals("U")))
+                        return i+"U";
+                    if(b.size() < 23 || !(b.size() >= 23 && b.get(22).getTeamPosition().equals("P")))
+                        return i+"P";                    
+                }
+            }
+        
+        return "";
+    }
     private void assignPoints(){
         if(draftTeams.size() == 0) {
         } else{
@@ -1161,14 +1254,26 @@ public class WDK_GUI {
         });
         fantasyTeamsButton.setOnAction(e -> {
             wdkPane.setCenter(fantasyTeamWorkspacePane);
+            
         });        
         draftButton.setOnAction(e -> {
-                    wdkPane.setCenter(draftSummaryWorkspacePane);
+            wdkPane.setCenter(draftSummaryWorkspacePane);
 
         });
         MLBTeamButton.setOnAction(e -> {
             wdkPane.setCenter(mlbTeamsWorkspacePane);
             
+        });
+        
+        playButton.setOnAction(e ->{
+            timeline = new Timeline(new KeyFrame(
+                Duration.millis(500),
+                ae -> asgnRndPlayer()));
+                timeline.setCycleCount(Animation.INDEFINITE);
+                timeline.play();
+        });
+        pauseButton.setOnAction(e ->{
+            timeline.stop();
         });
         
         draftAddButtion.setOnAction(e -> {
@@ -1234,6 +1339,10 @@ public class WDK_GUI {
             } catch (IOException ex) {
                 Logger.getLogger(WDK_GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+        });
+        
+        selectPlayer.setOnAction(e ->{
+          asgnRndPlayer();  
         });
         
         fantasyTeamComboBox.setOnAction(e ->{
