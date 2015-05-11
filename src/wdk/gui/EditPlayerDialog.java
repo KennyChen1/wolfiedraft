@@ -108,8 +108,6 @@ public class EditPlayerDialog extends Stage {
         fantasyTeamComboBox.getItems().addAll(gui.fantasyTeamList);
         positionComboBox = new ComboBox();
         positionComboBox.setValue("");
-        //positionComboBox.getItems().addAll(player.getPosition().split("_"));
-        //positionComboBox.setValue(player.getPosition().split("_")[0]);
         
         contractComboBox = new ComboBox();
         contractComboBox.getItems().addAll("S2", "S1", "X");
@@ -117,7 +115,6 @@ public class EditPlayerDialog extends Stage {
         
         salaryTextBox = new TextField();
                 salaryTextBox.textProperty().addListener((observable, oldValue, newValue) -> {
-            //curPitcher.setNotes(newValue);
         });
                      
         // AND FINALLY, THE BUTTONS
@@ -137,7 +134,7 @@ public class EditPlayerDialog extends Stage {
             fillComboBox(player, gui);
         });
         completeButton.setOnAction(e -> {
-            try{Player x = null;
+            try{Player x;
                 if(availPlayer){//from free agent to team  
                     if(this.fantasyTeamComboBox.getValue().toString().equals("Free Agent")){
                     } else{
@@ -173,6 +170,13 @@ public class EditPlayerDialog extends Stage {
                     gui.doDeletePlayer();
                     
                     gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).setFunding(Integer.parseInt(salaryTextBox.getText()));
+                   
+                    if(x.getContract().equals("S2")){
+                        gui.summaryStartingList.add(x);
+                        gui.draftSummaryList.removeAll(gui.draftSummaryList);
+                        gui.draftSummaryList.addAll(gui.summaryStartingList);
+                        gui.draftSummaryList.addAll(gui.summaryTaxiList);
+                    }
                 }    
             } else{
                     x = gui.startingLineupTable.getSelectionModel().getSelectedItem();
@@ -196,9 +200,24 @@ public class EditPlayerDialog extends Stage {
                         
                     gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam()))
                             .setFunding(Integer.parseInt("-" + x.getSalary()));
-
-                    } else{// moving between teams
-                        if(x.getFantasyTeam().equals(this.fantasyTeamComboBox.getValue())){
+                    
+                    int idx = -1;
+                    for(int i = 0; i < gui.draftSummaryList.size(); i++){
+                        if(gui.draftSummaryList.get(i).getFirstName().equals(x.getFirstName())
+                                && gui.draftSummaryList.get(i).getLastName().equals(x.getLastName()))
+                            idx = i;
+                    }
+                    if(idx < gui.summaryStartingList.size())
+                        gui.summaryStartingList.remove(idx);
+                    else
+                        gui.summaryTaxiList.remove(idx-gui.summaryStartingList.size());
+                    gui.draftSummaryList.removeAll(gui.draftSummaryList);
+                    gui.draftSummaryList.addAll(gui.summaryStartingList);
+                    gui.draftSummaryList.addAll(gui.summaryTaxiList);
+                    //END OF MOVING BACK TO FREE AGENT
+                    
+                    } else{// MOVING BETWEEN TEAMS
+                        if(x.getFantasyTeam().equals(this.fantasyTeamComboBox.getValue())){//same fucking team
                             if(gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam())).getFunding() + x.getSalary()
                                     - Integer.parseInt(this.salaryTextBox.getText()) < 0){
                                 throw new IllegalArgumentException();
@@ -212,8 +231,6 @@ public class EditPlayerDialog extends Stage {
                         } else{
                             gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam()))
                             .setFunding(Integer.parseInt("-"+x.getSalary()));
-                            gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString()))
-                                    .setFunding(Integer.parseInt(salaryTextBox.getText()));
                         }
                         
                         
@@ -232,8 +249,30 @@ public class EditPlayerDialog extends Stage {
                         ObservableList<Player> b = gui.draftTeams.get(gui.searchTeamName(this.fantasyTeamComboBox.getValue().toString())).getStartingLineup();
                         b.add(x);
                         
-                    }
-            }
+                        gui.draftTeams.get(gui.searchTeamName(x.getFantasyTeam()))
+                            .setFunding( x.getSalary());
+                        
+                    if(x.getContract().equals("S2")){
+                        gui.summaryStartingList.add(x);
+                        gui.draftSummaryList.removeAll(gui.draftSummaryList);
+                        gui.draftSummaryList.addAll(gui.summaryStartingList);
+                        gui.draftSummaryList.addAll(gui.summaryTaxiList);
+                    } else{//if(!x.getContract().equals("S2")){
+                        int idx = -1;
+                        for(int i = 0; i < gui.draftSummaryList.size(); i++){
+                            if(gui.draftSummaryList.get(i).getFirstName().equals(x.getFirstName())
+                                    && gui.draftSummaryList.get(i).getLastName().equals(x.getLastName()))
+                                idx = i;
+                        }
+                        if(idx < gui.summaryStartingList.size())
+                            gui.summaryStartingList.remove(idx);
+                        else
+                            gui.summaryTaxiList.remove(idx-gui.summaryStartingList.size());
+                        gui.draftSummaryList.removeAll(gui.draftSummaryList);
+                        gui.draftSummaryList.addAll(gui.summaryStartingList);
+                        gui.draftSummaryList.addAll(gui.summaryTaxiList);
+                    }  
+            }}
                 gui.sortFantasyTables(this.fantasyTeamComboBox.getValue().toString());
                 this.close();
             } catch(NumberFormatException x){

@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -24,6 +26,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -40,6 +43,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javax.json.JsonArray;
 import properties_manager.PropertiesManager;
 import wdk.data.FantasyTeam;
@@ -211,7 +215,21 @@ public class WDK_GUI {
     TableColumn whipAvgColumn;
     TableColumn totalPtsColumn;
     
-    
+    //DRUFT SUMMARAY
+    Button selectPlayer;
+    Button playButton;
+    Button pauseButton;
+    TableView<Player> summaryTable;
+    TableColumn pickColumn;
+    TableColumn firstPickColumn;
+    TableColumn lastPickColumn;
+    TableColumn summaryFantasyColumn;
+    TableColumn summaryContractColumn;
+    TableColumn summarySalaryColumn;
+    ObservableList<Player> draftSummaryList;
+    ObservableList<Player> summaryStartingList;
+    ObservableList<Player> summaryTaxiList;
+
     
     FileController a = new FileController();
     JsonArray pitchersList;
@@ -256,6 +274,8 @@ public class WDK_GUI {
         initAllPlayerTable();
         initHitterTable();
         initPitcherTable();
+        
+            initDraftWorkspace();
         initFantasyTeamsWorkspace();
         initAvailablePlayersWorkspace();
         initFantasyStandingWorkspace();
@@ -527,11 +547,49 @@ public class WDK_GUI {
         fantasyStandingWorkspacePane.getChildren().add(standingsTable);
     }
     private void initDraftWorkspace() {
-        // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
-        draftSummarySplitPane = new SplitPane();
         draftSummaryWorkspacePane = new VBox();        
+        
         draftSummaryHeadingLabel = initChildLabel(draftSummaryWorkspacePane, WDK_PropertyType.DRAFT_SUMMARY_HEADING_LABEL, CLASS_HEADING_LABEL);
-        wdkPane.setCenter(draftSummaryWorkspacePane);
+                
+        HBox row = new HBox();
+        selectPlayer = this.initChildButton(row, STAR_ICON, ADD_ICON, false);
+        playButton = this.initChildButton(row, PLAY_ICON, ADD_ICON, false);
+        pauseButton = this.initChildButton(row, PAUSE_ICON, ADD_ICON, false);        
+        draftSummaryWorkspacePane.getChildren().add(row);
+        
+        //draftSummaryList
+        summaryTable = new TableView();
+        pickColumn = new TableColumn("Pick #");
+        firstPickColumn = new TableColumn(COL_FIRST);
+        lastPickColumn = new TableColumn(COL_LAST);
+        summaryFantasyColumn = new TableColumn("Team");
+        summaryContractColumn = new TableColumn("Contract");
+        summarySalaryColumn = new TableColumn("Salary");
+        
+        draftSummaryList = FXCollections.observableArrayList();
+        summaryStartingList = FXCollections.observableArrayList();
+        summaryTaxiList = FXCollections.observableArrayList();
+        
+        pickColumn.setCellValueFactory(new Callback<CellDataFeatures<Player, String>, ObservableValue<String>>() {
+        @Override
+        public ObservableValue<String> call(CellDataFeatures<Player, String> param) {
+            return new ReadOnlyObjectWrapper(summaryTable.getItems().indexOf(param.getValue()) + 1 + "");
+        }
+        });   
+        pickColumn.setSortable(false);
+        
+        
+        //pickColumn = new TableColumn("Pick #");
+        firstPickColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        lastPickColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        summaryFantasyColumn.setCellValueFactory(new PropertyValueFactory<>("fantasyTeam"));
+        summaryContractColumn.setCellValueFactory(new PropertyValueFactory<>("contract"));
+        summarySalaryColumn.setCellValueFactory(new PropertyValueFactory<>("salary"));
+        
+        summaryTable.getColumns().addAll(pickColumn, firstPickColumn, lastPickColumn,
+               summaryFantasyColumn, summaryContractColumn, summarySalaryColumn);
+        summaryTable.setItems(draftSummaryList);
+        draftSummaryWorkspacePane.getChildren().add(summaryTable);
     }
     private void initMLBTeamsWorkspace() {
         // HERE'S THE SPLIT PANE, ADD THE TWO GROUPS OF CONTROLS
@@ -923,61 +981,61 @@ public class WDK_GUI {
         return x;
     }
     void sortFantasyTables(String search){
-        ObservableList<Player> a = FXCollections.observableArrayList();
+        ObservableList<Player> lel = FXCollections.observableArrayList();
         if(searchTeamName(search) != -1){//start of if
-        a.addAll(draftTeams.get(searchTeamName(search)).getStartingLineup());
-        draftTeams.get(searchTeamName(search)).getStartingLineup().removeAll(a);
+        lel.addAll(draftTeams.get(searchTeamName(search)).getStartingLineup());
+        draftTeams.get(searchTeamName(search)).getStartingLineup().removeAll(lel);
         
-        for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("C")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);     i--;
+        for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("C")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);     i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("1B")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("1B")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("3B")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("3B")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("CI")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("CI")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("2B")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("2B")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("SS")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("SS")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("MI")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("MI")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("OF")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("OF")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
-        }for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("U")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        }for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("U")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
         }
-        for(int i = 0; i < a.size(); i++){
-            if(a.get(i).getTeamPosition().equals("P")){
-                draftTeams.get(searchTeamName(search)).getStartingLineup().add(a.get(i));            
-                a.remove(i);   i--;
+        for(int i = 0; i < lel.size(); i++){
+            if(lel.get(i).getTeamPosition().equals("P")){
+                draftTeams.get(searchTeamName(search)).getStartingLineup().add(lel.get(i));            
+                lel.remove(i);   i--;
             }
         }
         }//end of if
@@ -1105,7 +1163,8 @@ public class WDK_GUI {
             wdkPane.setCenter(fantasyTeamWorkspacePane);
         });        
         draftButton.setOnAction(e -> {
-            initDraftWorkspace();
+                    wdkPane.setCenter(draftSummaryWorkspacePane);
+
         });
         MLBTeamButton.setOnAction(e -> {
             wdkPane.setCenter(mlbTeamsWorkspacePane);
@@ -1119,18 +1178,33 @@ public class WDK_GUI {
         draftRemoveButtion.setOnAction(e -> {
             try{
                 ObservableList<Player> pla = draftTeams.get(searchTeamName(fantasyTeamComboBox.getValue().toString())).getStartingLineup();
-                        playerList.addAll(pla);
-                        for(int i = 0; i < pla.size(); i++){
-                            if(!pla.get(i).getPosition().contains("P")){
-                                Hitter zz = new Hitter(pla.get(i).getFirstName(), pla.get(i).getLastName(), pla.get(i).getTeam(), 
-                                  pla.get(i).getBirthYear(), pla.get(i).getNotes(), pla.get(i).getBirthNation(), pla.get(i).getPosition(), 
-                                        pla.get(i).getAB(), pla.get(i).getRW(), pla.get(i).getHits(), pla.get(i).getHRSV(), pla.get(i).getRBIK(), 
-                                        (int)(pla.get(i).getSBERA()));
-                                allHitterList.add(zz);
-                            } else{
-                                Pitcher xy = playerToPitcher(pla.get(i));
-                                pitcherList.add(xy);
+                    playerList.addAll(pla);
+                    for(int i = 0; i < pla.size(); i++){
+                        if(!pla.get(i).getPosition().contains("P")){
+                            Hitter zz = new Hitter(pla.get(i).getFirstName(), pla.get(i).getLastName(), pla.get(i).getTeam(), 
+                              pla.get(i).getBirthYear(), pla.get(i).getNotes(), pla.get(i).getBirthNation(), pla.get(i).getPosition(), 
+                                    pla.get(i).getAB(), pla.get(i).getRW(), pla.get(i).getHits(), pla.get(i).getHRSV(), pla.get(i).getRBIK(), 
+                                    (int)(pla.get(i).getSBERA()));
+                            allHitterList.add(zz);
+                        } else{
+                            Pitcher xy = playerToPitcher(pla.get(i));
+                            pitcherList.add(xy);
+                        }
+                        int idx = -1;
+                        for(int z = 0; z < draftSummaryList.size(); z++){
+                            if(draftSummaryList.get(z).getFirstName().equals(pla.get(i).getFirstName())
+                                    && draftSummaryList.get(z).getLastName().equals(pla.get(i).getLastName())){
+                                idx = z; 
                             }
+                        }
+                        if(idx < summaryStartingList.size())
+                            summaryStartingList.remove(idx);
+                        else
+                            summaryTaxiList.remove(idx-summaryStartingList.size());
+                        draftSummaryList.removeAll(draftSummaryList);
+                        draftSummaryList.addAll(summaryStartingList);
+                        draftSummaryList.addAll(summaryTaxiList);
+
                     }   
                         pla.removeAll(pla);
                         draftTeams.remove(searchTeamName(fantasyTeamComboBox.getValue().toString()));

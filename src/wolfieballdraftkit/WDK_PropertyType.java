@@ -24,6 +24,9 @@ public enum WDK_PropertyType {
         ADD_ICON,
         MINUS_ICON,
         EDIT_ICON,
+        STAR_ICON,
+        PLAY_ICON,
+        PAUSE_ICON,
         
         // APPLICATION TOOLTIPS FOR BUTTONS
         NEW_DRAFT_TOOLTIP,

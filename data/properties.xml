@@ -21,6 +21,9 @@
 		<property name="EDIT_ICON"         value="Edit.png"></property>
         <property name="MOVE_UP_ICON"       value="MoveUp.png"></property>
         <property name="MOVE_DOWN_ICON"     value="MoveDown.png"></property>
+		<property name="STAR_ICON"     value="Star.png"></property>
+		<property name="PLAY_ICON"     value="Play.png"></property>
+		<property name="PAUSE_ICON"     value="Pause.png"></property>
         
         <!-- TOOLTIPS FOR BUTTONS -->
         <property name="NEW_DRAFT_TOOLTIP"         value="Create a New Draft"></property>
@@ -55,10 +58,11 @@
 	
         <!-- GUI LABELS -->
         <property name="FANTASY_TEAM_HEADING_LABEL"			value="Fantasy Teams"></property>
-		<property name="FANTASY_STANDING_HEADING_LABEL"		value="Fantasy Standings"></property>
+		<property name="FANTASY_STANDING_HEADING_LABEL"		value="Fantasy Standings Estimate"></property>
 		<property name="AVAILABLE_PLAYERS_HEADING_LABEL"	value="Available Players"></property>
 		<property name="DRAFT_SUMMARY_HEADING_LABEL"		value="Draft Summary"></property>
 		<property name="MLB_TEAMS_HEADING_LABEL"			value="MLB Teams"></property>
+		<property name="MLB_TEAMS_COMBOBOX_LABEL"			value="Select Pro Team: "></property>
 		<property name="SEARCH_HEADING_LABEL"				value="Search: "></property>
 		<property name="FANTASY_COMBO_LABEL"				value="Select Fantasy Team"></property>
 		<property name="DRAFT_NAME_LABEL"					value="Draft Name: "></property>
